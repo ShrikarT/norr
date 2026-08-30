@@ -28,16 +28,31 @@ function NodeStatus() {
   );
 }
 
-const NAV: readonly (readonly [string, string])[] = [
-  ["/", "Launches"],
-  ["/start", "Start"],
-  ["/desks", "Desks"],
-  ["/portfolio", "Portfolio"],
-  ["/activity", "Activity"],
-  ["/owed", "Owed"],
-  ["/compare", "Compare"],
-  ["/private", "Private"],
-  ["/settings", "Settings"],
+const NAV: readonly (readonly [string, readonly (readonly [string, string])[]])[] = [
+  [
+    "Discover",
+    [
+      ["/launches", "Launches"],
+      ["/start", "Start a launch"],
+      ["/desks", "Desks"],
+      ["/compare", "Compare"],
+    ],
+  ],
+  [
+    "Your account",
+    [
+      ["/portfolio", "Portfolio"],
+      ["/activity", "Activity"],
+      ["/owed", "Owed to you"],
+    ],
+  ],
+  [
+    "Protocol",
+    [
+      ["/private", "Private workspace"],
+      ["/settings", "Status"],
+    ],
+  ],
 ];
 
 export function Shell({ children }: { children: ReactNode }) {
@@ -59,15 +74,20 @@ export function Shell({ children }: { children: ReactNode }) {
             </p>
           </div>
           <nav className="rail__section" aria-label="Primary">
-            {NAV.map(([to, label]) => (
-              <Link
-                className="nav-link"
-                aria-current={location.pathname === to ? "page" : undefined}
-                to={to}
-                key={to}
-              >
-                <span>{label}</span>
-              </Link>
+            {NAV.map(([group, links]) => (
+              <div className="rail__group" key={group}>
+                <span className="label rail__group-label">{group}</span>
+                {links.map(([to, label]) => (
+                  <Link
+                    className="nav-link"
+                    aria-current={location.pathname === to ? "page" : undefined}
+                    to={to}
+                    key={to}
+                  >
+                    <span>{label}</span>
+                  </Link>
+                ))}
+              </div>
             ))}
           </nav>
           <div className="rail__foot">

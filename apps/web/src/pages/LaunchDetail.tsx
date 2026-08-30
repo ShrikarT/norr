@@ -34,7 +34,7 @@ export function LaunchDetail() {
       <>
         <PageHead title="Launch not found" copy="No launch with this identifier exists in the catalog or on the connected cluster." />
         <Empty>
-          <Link to="/" className="accent-text">
+          <Link to="/launches" className="accent-text">
             Back to launches
           </Link>
         </Empty>

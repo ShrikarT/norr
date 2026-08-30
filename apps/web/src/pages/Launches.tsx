@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCluster } from "../lib/status";
 import { SAMPLE_LAUNCHES, type CatalogLaunch } from "../lib/catalog";
 import { priceQ64 } from "@norr/sdk";
-import { Badge, Callout, Metric, PageHead } from "../components/primitives";
+import { Badge, Callout, PageHead } from "../components/primitives";
 
 function curvePrice(launch: CatalogLaunch): string | null {
   if (!launch.curve) return null;
@@ -23,35 +23,14 @@ export function Launches() {
   return (
     <>
       <PageHead
-        title={
-          <>
-            Private while open.
-            <br />
-            <span className="accent-text">Public when settled.</span>
-          </>
-        }
-        copy="Token launches on Solana where contribution amounts stay encrypted while a raise is open, then settle into public bonding curve markets with deterministic Merkle claims."
+        title="Launches"
+        copy="Instant bonding curve markets and sealed raises. Amounts on a sealed raise stay encrypted while it is open; every launch settles into a public, verifiable market."
         action={
           <button className="button button--primary" onClick={() => navigate("/start")}>
             Start a launch
           </button>
         }
       />
-
-      <div className="grid grid--metrics">
-        <Metric label="Cluster" value={c.identity === "unknown" ? "—" : c.identity} note={c.genesisHash ? `genesis ${c.genesisHash.slice(0, 8)}…` : "verifying"} />
-        <Metric label="RPC" value={c.connected ? "connected" : "unreachable"} note={c.slot ? `slot ${c.slot.toLocaleString()}` : c.rpcError ?? ""} />
-        <Metric
-          label="Programs on cluster"
-          value={c.programsDeployed ? `${c.deployedCount} / 7` : "probing…"}
-          note={programsLive ? "executable" : "not yet deployed"}
-        />
-        <Metric
-          label="Confidential path"
-          value={c.ctEvidence.checked ? (c.ctEvidence.mintLive ? "setup proven" : "unverified") : "checking…"}
-          note="transfer gated upstream"
-        />
-      </div>
 
       {!programsLive && c.programsDeployed && (
         <Callout tone="note">
