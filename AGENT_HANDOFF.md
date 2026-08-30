@@ -1,8 +1,8 @@
-﻿# norr.fun Solana migration ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ completion handoff
+﻿# norr.fun Solana implementation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ completion handoff
 
 <!-- markdownlint-disable MD013 MD060 -->
 
-> **Status on 2026-08-28:** substantial clean-room scaffold and tested prototype,
+> **Status on 2026-08-28:** substantial protocol scaffold and tested prototype,
 > **not an end-to-end complete protocol and not mainnet-ready**. Several value-moving
 > instructions intentionally fail closed. Do not remove those gates until the required
 > integrations and tests exist.
@@ -15,7 +15,7 @@ actually works from what is only scaffolded, then gives an ordered path to compl
 Read them in this order:
 
 1. `AGENT_HANDOFF.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ current gaps and completion sequence.
-2. `PLAN.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ canonical migration plan, security model, and acceptance requirements.
+2. `PLAN.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ canonical protocol specification, security model, and acceptance requirements.
 3. `CLAUDE.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ repository-specific implementation rules and invariants.
 4. `DESIGN.md` and `tokens.css` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ UI behavior and visual constraints.
 5. `README.md`, `docs/IMPLEMENTATION_STATUS.md`, and `docs/parity.md` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ï¿½ current status.
@@ -29,7 +29,7 @@ and update this handoff after resolving the difference.
 - Behavioral reference: `https://github.com/nickthelegend/norr-fun`
 - Reference branch: `norr-rebrand`
 - Pinned reference commit: `5af8fcd103b7ca4dc45ec6485e5bdb685b0966ea`
-- Implementation approach: clean-room behavior migration, not a line-for-line contract port.
+- Implementation approach: Solana-native implementation.
 - Distribution license: unresolved. See `LICENSE-PENDING.md` and `NOTICE.md`.
 
 Do not copy source from the reference repository into this project unless the license has been
@@ -463,7 +463,7 @@ definition of done.
 Copy this prompt into the next agent together with the repository:
 
 > Read `AGENT_HANDOFF.md`, `PLAN.md`, `CLAUDE.md`, `DESIGN.md`, and the current source before
-> editing. Treat the repository as a partial, fail-closed Solana migration. Work through the
+> editing. Treat the repository as a partial, fail-closed Solana implementation. Work through the
 > phases in order, starting by making a clean checkout compile with the pinned toolchain. Never
 > replace Token-2022 confidential transfers with a custom ledger, never expose open-sale
 > amounts, never remove a P0/DAMM/activation gate without the required integration and tests,

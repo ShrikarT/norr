@@ -1,14 +1,13 @@
-﻿# Norr.fun Solana Migration — Final Comprehensive Project Audit
+﻿# Norr — Final Project Audit
 
-**Audit Timestamp:** 2026-08-30
+**Audit Date:** 2026-08-30
 **Target Network:** Solana Devnet (`https://api.devnet.solana.com`, Genesis Hash: `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG`)
-**Repository Baseline:** Clean-room implementation of `PLAN.md` specification
 
 ---
 
 ## Executive Summary
 
-This audit establishes the exact operational, cryptographic, on-chain, and frontend state of the Norr repository. Every component is evaluated against [PLAN.md](file:///c:/Users/Shrikar/norr-fun-solana/PLAN.md). 
+This audit evaluates the Norr Solana protocol implementation against the technical specification in [PLAN.md](file:///c:/Users/Shrikar/norr-fun-solana/PLAN.md).
 
 All non-confidential systems (bonding curve market, pro-rata fee routing, launch configuration, community desk boards, on-chain social threads/comments/profiles, Merkle claims, indexer stores, CLI adapters, and the complete 19-route React frontend) are **fully implemented, tested, and passing all automated test suites**.
 
@@ -60,15 +59,15 @@ All confidential systems requiring Token-2022 `zk-ops` execution remain strictly
 ### B. COMPLETE BUT REQUIRES USER / OPERATOR CONFIGURATION
 
 1. **PostgreSQL Indexer Backend (`apps/indexer/src/pg-store.ts`)**:
-   - Complete schema and query implementation exists. To use in production instead of `MemoryStore`, the operator must provide `DATABASE_URL`.
+   - Complete schema and query implementation exists. To use in production instead of `MemoryStore`, provide `DATABASE_URL`.
 2. **Indexer Live Block Stream Provider (`apps/indexer/src/ingest.ts`)**:
-   - Real-time WebSocket / Geyser block streaming requires a dedicated RPC or Yellowstone Geyser gRPC subscription URL (`RPC_WS_URL` or `GEYSER_ENDPOINT`).
+   - Real-time WebSocket / Geyser block streaming requires a dedicated RPC or Yellowstone Geyser gRPC subscription URL (`RPC_WS_URL`).
 3. **Meteora DAMM v2 Graduation CPI**:
    - Adapter interfaces and accounts mapped to `cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG`. Live graduation requires seeded liquidity pool initialization on mainnet/devnet.
 
 ---
 
-### C. BLOCKED SPECIFICALLY BY PHASE 3 (Token-2022 Upstream `zk-ops`)
+### C. BLOCKED SPECIFICALLY BY TOKEN-2022 UPSTREAM CAPABILITY
 
 1. **Token-2022 `ConfidentialTransferInstruction::Transfer`**:
    - **Devnet Execution Result:** Fails with `InvalidInstructionData` because the canonical Solana Core BPF binary deployed at `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb` has `feature = "zk-ops"` compiled out.
@@ -82,7 +81,7 @@ All confidential systems requiring Token-2022 `zk-ops` execution remain strictly
 
 ---
 
-### D. NOT IMPLEMENTED / REMAINING (Post-Residency Future Roadmap)
+### D. NOT IMPLEMENTED / REMAINING (Future Roadmap)
 
 1. **Automated Threshold Key Ceremony Coordinator**:
    - Multi-party threshold ElGamal decryption key ceremony coordinator daemon (currently manual 2-of-3 key share combination per specification).

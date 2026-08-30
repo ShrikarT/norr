@@ -62,7 +62,7 @@ The deployed Core BPF binary of Token-2022 on all official Solana clusters (Devn
    - Run custom, unverified BPF overrides with ephemeral genesis hashes.
    - Using non-canonical test clusters violates the protocol's cryptographic security assumptions and deployment policy.
 3. **Custom Local Program Deployments:**
-   - Deploying a patched Token-2022 program to bypass official network status would violate the clean-room protocol boundary and fail canonical audit validation.
+   - Deploying a patched Token-2022 program to bypass official network status would violate the protocol security boundary and fail canonical audit validation.
 
 ---
 

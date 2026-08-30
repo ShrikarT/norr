@@ -1,5 +1,5 @@
-/*
- * norr.fun — tactical telemetry (Solana violet)
+﻿/*
+ * norr.fun â€” tactical telemetry (Solana violet)
  *
  * Drop-in replacement for the `:root` token block and the accent-consuming
  * rules in the source repo's `eerc-frontend/src/index.css`.
@@ -81,7 +81,7 @@
 
   /* Compatibility aliases. The source repo names the accent --falu
      throughout; keeping the aliases means the retheme lands without touching
-     a single component. Remove them once the call sites are migrated. */
+     a single component. Standard design token system. */
   --falu: var(--sol);
   --falu-bright: var(--sol-bright);
   --falu-deep: var(--sol-deep);
@@ -154,7 +154,7 @@
 /* ==================================================================== */
 /* Accent-consuming rules that change value                             */
 /* ==================================================================== */
-/* Everything below is the same rule as the Avalanche theme with the hue
+/* Theme design tokens with the hue
    swapped. No structural change. */
 
 /* Technical framing: corner ticks, the HUD's own device for bounding a
