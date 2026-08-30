@@ -1,9 +1,0 @@
-﻿[package]
-name = "test-210"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-solana-zk-token-sdk = "=2.1.0"
-bytemuck = "1.12.0"
-hex = "0.4.3"

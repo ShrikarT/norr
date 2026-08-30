@@ -149,9 +149,21 @@ To deploy the web application to Vercel, Netlify, Cloudflare Pages, or AWS S3, s
 
 ## Documentation Index
 
-- [`SUBMISSION_STATUS.md`](SUBMISSION_STATUS.md): Product status, verified program IDs, and 60-second reviewer demo path.
 - [`DEPLOYMENT.md`](DEPLOYMENT.md): Frontend production build and static hosting guide.
-- [`docs/final-project-audit.md`](docs/final-project-audit.md): Complete component audit against technical requirements.
-- [`docs/p0-phase3-audit.md`](docs/p0-phase3-audit.md): Cryptographic & Devnet on-chain proof account breakdown.
+- [`docs/p0-phase3-audit.md`](docs/p0-phase3-audit.md): Cryptographic and Devnet on-chain proof account breakdown.
 - [`docs/p0-phase3-blocked.md`](docs/p0-phase3-blocked.md): Upstream Token-2022 runtime log and dependency analysis.
-- [`AGENT_HANDOFF.md`](AGENT_HANDOFF.md): Engineering handoff and protocol invariants.
+- [`docs/confidential-transfers.md`](docs/confidential-transfers.md): Privacy boundary and fail-closed gate design.
+- [`docs/indexing.md`](docs/indexing.md): Rebuildable history indexing model.
+- [`docs/norr-demo-script.md`](docs/norr-demo-script.md): Demo video script and timing map.
+
+## Demo
+
+`norr-demo.mp4` (repo root, ~2 minutes) walks the product, the live Devnet evidence, and the honestly gated confidential transfer boundary. Thumbnail: `norr-demo-thumbnail.png`.
+
+## Roadmap
+
+1. Deploy the seven Anchor programs to Devnet with verified builds and published IDLs.
+2. Resume the confidential pipeline the moment upstream Token-2022 ships with zk-ops enabled — zero architecture changes required.
+3. Complete the P0 acceptance drills on the target cluster and unlock `P0Required` paths.
+4. Locked-liquidity graduation, indexer-backed history, and the desk curation economy.
+5. Immutability handover for `norr-claim`, `norr-fees`, `norr-market`, `norr-wrap` before uncapped mainnet value.
