@@ -1,0 +1,21 @@
+{
+  "name": "@norr/confidential",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@solana-program/token-2022": "0.4.2",
+    "@solana-program/zk-elgamal-proof": "0.4.0",
+    "@solana/kit": "^8.1.0",
+    "@solana/spl-token": "0.4.15",
+    "@solana/zk-sdk": "0.5.2"
+  }
+}

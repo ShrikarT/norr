@@ -1,0 +1,23 @@
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+norr_launch = "BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu"
+norr_claim = "68AW7FczGrPoeRfYUVeQnu6Aa55HnbgtMhVgRdTCwbSq"
+norr_fees = "8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY"
+norr_market = "DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY"
+norr_boards = "67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ"
+norr_social = "Ae8w5UeyLrfe1RrzZue42hHeL1D7cohXDc1a6GfcPZos"
+norr_wrap = "DxUhL7ncb43VA5neP3gX7pNVAghRv9FMsp1Ntz2T7a5i"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "pnpm test"
+
+[test]
+startup_wait = 15000
+shutdown_wait = 2000

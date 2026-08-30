@@ -1,0 +1,5 @@
+﻿
+[[bin]]
+name = "gen_proof"
+path = "src/main.rs"
+
