@@ -5,7 +5,7 @@
     clippy::needless_range_loop
 )]
 use anchor_lang::prelude::*;
-declare_id!("8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY");
+declare_id!("6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J");
 const DENOMINATOR: u64 = 10_000;
 const MAX_SPLITS: usize = 8;
 

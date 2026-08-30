@@ -2,11 +2,11 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ");
+declare_id!("2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY");
 
 pub const MAX_PARTNER_BPS: u16 = 5_000;
 pub const NORR_LAUNCH_ID: Pubkey =
-    anchor_lang::solana_program::pubkey!("BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu");
+    anchor_lang::solana_program::pubkey!("4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8");
 
 #[program]
 pub mod norr_boards {

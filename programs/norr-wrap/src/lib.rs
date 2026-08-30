@@ -5,7 +5,7 @@
     clippy::needless_range_loop
 )]
 use anchor_lang::prelude::*;
-declare_id!("DxUhL7ncb43VA5neP3gX7pNVAghRv9FMsp1Ntz2T7a5i");
+declare_id!("9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU");
 #[program]
 pub mod norr_wrap {
     use super::*;

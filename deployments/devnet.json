@@ -6,43 +6,43 @@
     "status":  "undeployed",
     "programs":  {
                      "norr_launch":  {
-                                         "address":  "BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu",
+                                         "address":  "4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8",
                                          "idlSha256":  null,
                                          "upgradeAuthority":  null,
                                          "verifiedBuild":  false
                                      },
                      "norr_claim":  {
-                                        "address":  "68AW7FczGrPoeRfYUVeQnu6Aa55HnbgtMhVgRdTCwbSq",
+                                        "address":  "4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R",
                                         "idlSha256":  null,
                                         "upgradeAuthority":  null,
                                         "verifiedBuild":  false
                                     },
                      "norr_fees":  {
-                                       "address":  "8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY",
+                                       "address":  "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
                                        "idlSha256":  null,
                                        "upgradeAuthority":  null,
                                        "verifiedBuild":  false
                                    },
                      "norr_market":  {
-                                         "address":  "DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY",
+                                         "address":  "Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV",
                                          "idlSha256":  null,
                                          "upgradeAuthority":  null,
                                          "verifiedBuild":  false
                                      },
                      "norr_boards":  {
-                                         "address":  "67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ",
+                                         "address":  "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
                                          "idlSha256":  null,
                                          "upgradeAuthority":  null,
                                          "verifiedBuild":  false
                                      },
                      "norr_social":  {
-                                         "address":  "Ae8w5UeyLrfe1RrzZue42hHeL1D7cohXDc1a6GfcPZos",
+                                         "address":  "95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw",
                                          "idlSha256":  null,
                                          "upgradeAuthority":  null,
                                          "verifiedBuild":  false
                                      },
                      "norr_wrap":  {
-                                       "address":  "DxUhL7ncb43VA5neP3gX7pNVAghRv9FMsp1Ntz2T7a5i",
+                                       "address":  "9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU",
                                        "idlSha256":  null,
                                        "upgradeAuthority":  null,
                                        "verifiedBuild":  false

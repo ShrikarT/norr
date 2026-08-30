@@ -63,13 +63,13 @@ The protocol consists of 7 modular Anchor programs. **Deployment status:** the p
 
 | Program | Program ID (declared; deployment probed live by the app) | Role |
 | :--- | :--- | :--- |
-| **`norr-launch`** | `BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu` | Launch parameters, lifecycle states, and metadata |
-| **`norr-market`** | `DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY` | Constant-product bonding curve ($k = \text{effective\_base} \times \text{token\_reserve}$) with fee routing |
-| **`norr-fees`** | `8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY` | Basis-point fee accrual and order-independent recipient distribution |
-| **`norr-boards`** | `67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ` | Curated community desks and membership terms |
-| **`norr-social`** | `Ae8w5UeyLrfe1RrzZue42hHeL1D7cohXDc1a6GfcPZos` | Discussion threads, comments, user profiles, follows, and promotions |
-| **`norr-claim`** | `68AW7FczGrPoeRfYUVeQnu6Aa55HnbgtMhVgRdTCwbSq` | Merkle claim distribution and refund escrows (`P0Required` on private paths) |
-| **`norr-wrap`** | `DxUhL7ncb43VA5neP3gX7pNVAghRv9FMsp1Ntz2T7a5i` | Confidential token adapter (`P0Required` fail-closed) |
+| **`norr-launch`** | `4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8` | Launch parameters, lifecycle states, and metadata |
+| **`norr-market`** | `Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV` | Constant-product bonding curve ($k = \text{effective\_base} \times \text{token\_reserve}$) with fee routing |
+| **`norr-fees`** | `6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J` | Basis-point fee accrual and order-independent recipient distribution |
+| **`norr-boards`** | `2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY` | Curated community desks and membership terms |
+| **`norr-social`** | `95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw` | Discussion threads, comments, user profiles, follows, and promotions |
+| **`norr-claim`** | `4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R` | Merkle claim distribution and refund escrows (`P0Required` on private paths) |
+| **`norr-wrap`** | `9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU` | Confidential token adapter (`P0Required` fail-closed) |
 
 ---
 

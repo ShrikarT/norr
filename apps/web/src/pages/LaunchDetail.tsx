@@ -376,8 +376,8 @@ function MerkleVerifier() {
       const sdk = await import("@norr/sdk");
       const others = [
         "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
-        "67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ",
-        "8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY",
+        "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
+        "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
       ].filter((a) => a !== claimant);
       const leaves = [claimant, ...others].map((who, i) =>
         sdk.allocationLeaf({

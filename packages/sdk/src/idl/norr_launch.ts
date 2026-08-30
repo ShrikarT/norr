@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_launch.json`.
  */
 export type NorrLaunch = {
-  "address": "BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu",
+  "address": "4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8",
   "metadata": {
     "name": "norrLaunch",
     "version": "0.1.0",
