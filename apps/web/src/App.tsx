@@ -1,6 +1,8 @@
 import { Route, Routes, Link } from "react-router-dom";
+import type { ReactNode } from "react";
 import { Shell, ErrorBoundary } from "./components/Shell";
 import { PageHead, Empty } from "./components/primitives";
+import { Landing } from "./pages/Landing";
 import { Launches } from "./pages/Launches";
 import { LaunchDetail } from "./pages/LaunchDetail";
 import { StartIndex, CreateLaunch } from "./pages/Start";
@@ -17,7 +19,7 @@ function NotFound() {
     <>
       <PageHead title="Page not found" copy="This route does not exist." />
       <Empty>
-        <Link to="/" className="accent-text">
+        <Link to="/launches" className="accent-text">
           Back to launches
         </Link>
       </Empty>
@@ -25,26 +27,38 @@ function NotFound() {
   );
 }
 
-export default function App() {
+function InShell({ children }: { children: ReactNode }) {
   return (
     <Shell>
-      <ErrorBoundary label="Route">
-        <Routes>
-          <Route path="/" element={<Launches />} />
-          <Route path="/raise/:sale" element={<LaunchDetail />} />
-          <Route path="/start" element={<StartIndex />} />
-          <Route path="/start/:mode" element={<CreateLaunch />} />
-          <Route path="/desks" element={<Desks />} />
-          <Route path="/desk/:slug" element={<DeskDetail />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/activity" element={<Activity />} />
-          <Route path="/owed" element={<Owed />} />
-          <Route path="/compare" element={<Compare />} />
-          <Route path="/private" element={<Private />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
+      <ErrorBoundary label="Route">{children}</ErrorBoundary>
     </Shell>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <ErrorBoundary label="Landing">
+            <Landing />
+          </ErrorBoundary>
+        }
+      />
+      <Route path="/launches" element={<InShell><Launches /></InShell>} />
+      <Route path="/raise/:sale" element={<InShell><LaunchDetail /></InShell>} />
+      <Route path="/start" element={<InShell><StartIndex /></InShell>} />
+      <Route path="/start/:mode" element={<InShell><CreateLaunch /></InShell>} />
+      <Route path="/desks" element={<InShell><Desks /></InShell>} />
+      <Route path="/desk/:slug" element={<InShell><DeskDetail /></InShell>} />
+      <Route path="/portfolio" element={<InShell><Portfolio /></InShell>} />
+      <Route path="/activity" element={<InShell><Activity /></InShell>} />
+      <Route path="/owed" element={<InShell><Owed /></InShell>} />
+      <Route path="/compare" element={<InShell><Compare /></InShell>} />
+      <Route path="/private" element={<InShell><Private /></InShell>} />
+      <Route path="/settings" element={<InShell><Settings /></InShell>} />
+      <Route path="*" element={<InShell><NotFound /></InShell>} />
+    </Routes>
   );
 }
