@@ -253,6 +253,70 @@ function ArtBreak({
   );
 }
 
+/** Animated micro-visualizations for the problem cards. Pure CSS loops,
+ *  paused under prefers-reduced-motion. */
+function VizRace() {
+  return (
+    <div className="lp-viz" aria-hidden="true">
+      <span className="lp-viz__lane" />
+      <span className="lp-viz__runner lp-viz__runner--user" />
+      <span className="lp-viz__runner lp-viz__runner--bot" />
+      <span className="lp-viz__runner lp-viz__runner--bot2" />
+      <span className="lp-viz__cap lp-viz__cap--l">your tx</span>
+      <span className="lp-viz__cap lp-viz__cap--r">bots</span>
+    </div>
+  );
+}
+
+function VizBars() {
+  return (
+    <div className="lp-viz lp-viz--bars" aria-hidden="true">
+      <span className="lp-viz__bar lp-viz__bar--whale" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <span key={i} className="lp-viz__bar" style={{ animationDelay: `${0.9 + i * 0.35}s` }} />
+      ))}
+      <span className="lp-viz__cap lp-viz__cap--l">whale</span>
+      <span className="lp-viz__cap lp-viz__cap--r">copied</span>
+    </div>
+  );
+}
+
+function VizRedacted() {
+  return (
+    <div className="lp-viz lp-viz--sheet" aria-hidden="true">
+      {["a7f2", "c04d", "91be", "e6a3"].map((h, i) => (
+        <span key={h} className="lp-viz__row" style={{ animationDelay: `${i * 0.5}s` }}>
+          <code>row_{i + 1}</code>
+          <i className="lp-viz__redact" />
+          <code className="lp-viz__hash">0x{h}…?</code>
+        </span>
+      ))}
+      <span className="lp-viz__cap lp-viz__cap--r">operator db</span>
+    </div>
+  );
+}
+
+/** Mini terminal readout — the mono “what the protocol sees” chip. */
+function Term({ lines, tone }: { lines: readonly ReactNode[]; tone?: "ok" | "warn" }) {
+  return (
+    <div className="lp-term" data-tone={tone} aria-hidden="true">
+      <span className="lp-term__bar">
+        <i />
+        <i />
+        <i />
+      </span>
+      <code>
+        {lines.map((l, i) => (
+          <span className="lp-term__line" key={i}>
+            {l}
+          </span>
+        ))}
+        <span className="lp-term__cursor" />
+      </code>
+    </div>
+  );
+}
+
 /** Infinite mono ticker of protocol vocabulary. */
 function Ticker() {
   const terms = [
@@ -417,21 +481,21 @@ export function Landing() {
           </h2>
         </Reveal>
         <div className="lp-cols">
-          <Reveal delay={0} className="lp-card">
+          <Reveal delay={0} className="lp-card lp-tick">
             <span className="lp-sublabel">— §01.1 / speed</span>
-            <CardIcon d="M13 3 4 14h6l-1 7 9-11h-6l1-7z" />
+            <VizRace />
             <h3>Front running</h3>
             <p>Visible contribution flow lets bots snipe allocations and position against a launch before price discovery begins.</p>
           </Reveal>
-          <Reveal delay={120} className="lp-card">
+          <Reveal delay={120} className="lp-card lp-tick">
             <span className="lp-sublabel">— §01.2 / intent</span>
-            <CardIcon d="M12 4a8 8 0 1 0 8 8h-8V4z M14 2v8h8a8 8 0 0 0-8-8z" />
+            <VizBars />
             <h3>Size signaling</h3>
             <p>Large contributions are copied the moment they land. Wallets telegraph intent they never chose to publish.</p>
           </Reveal>
-          <Reveal delay={240} className="lp-card">
+          <Reveal delay={240} className="lp-card lp-tick">
             <span className="lp-sublabel">— §01.3 / trust</span>
-            <CardIcon d="M4 5h16v3H4z M4 10.5h16v3H4z M4 16h10v3H4z" />
+            <VizRedacted />
             <h3>Unverifiable settlement</h3>
             <p>Many launchpads settle off chain or by operator spreadsheet. Contributors cannot independently check their own allocation.</p>
           </Reveal>
@@ -454,8 +518,11 @@ export function Landing() {
         </Reveal>
         <ol className="lp-steps">
           <Reveal as="li" delay={0}>
-            <span className="lp-step__n">01</span>
-            <div>
+            <div className="lp-step__rail">
+              <span className="lp-step__node" />
+            </div>
+            <div className="lp-step__body">
+              <span className="lp-sublabel">— §02.1 / encrypted</span>
               <h3>Contribute privately</h3>
               <p>
                 Contributions move as Token 2022 confidential transfers: Twisted ElGamal ciphertexts with equality,
@@ -463,11 +530,22 @@ export function Landing() {
                 timing stay public; the amount does not.
               </p>
             </div>
-            <span className="lp-step__tag">encrypted</span>
+            <Term
+              lines={[
+                <>
+                  amount&nbsp;&nbsp;<i className="lp-term__redact" /> <em>elgamal</em>
+                </>,
+                <>proofs&nbsp;&nbsp;eq ✓ · validity ✓ · range ✓</>,
+                <>sender&nbsp;&nbsp;public · timing public</>,
+              ]}
+            />
           </Reveal>
           <Reveal as="li" delay={140}>
-            <span className="lp-step__n">02</span>
-            <div>
+            <div className="lp-step__rail">
+              <span className="lp-step__node" />
+            </div>
+            <div className="lp-step__body">
+              <span className="lp-sublabel">— §02.2 / verifiable</span>
               <h3>Settle publicly</h3>
               <p>
                 When the raise closes, allocations commit to a domain separated Merkle root on chain. Every claimant
@@ -475,11 +553,23 @@ export function Landing() {
                 settlement deadline.
               </p>
             </div>
-            <span className="lp-step__tag">verifiable</span>
+            <Term
+              tone="ok"
+              lines={[
+                <>root&nbsp;&nbsp;&nbsp;&nbsp;3fca…9b21 committed</>,
+                <>
+                  leaf&nbsp;&nbsp;&nbsp;&nbsp;verified locally <em data-ok>✓</em>
+                </>,
+                <>refund&nbsp;&nbsp;timelocked escrow armed</>,
+              ]}
+            />
           </Reveal>
           <Reveal as="li" delay={280}>
-            <span className="lp-step__n">03</span>
-            <div>
+            <div className="lp-step__rail">
+              <span className="lp-step__node" />
+            </div>
+            <div className="lp-step__body">
+              <span className="lp-sublabel">— §02.3 / autonomous</span>
               <h3>Trade on the curve</h3>
               <p>
                 Settled tokens trade on an autonomous constant product bonding curve with exact integer arithmetic.
@@ -487,7 +577,13 @@ export function Landing() {
                 move backward.
               </p>
             </div>
-            <span className="lp-step__tag">autonomous</span>
+            <Term
+              lines={[
+                <>invariant&nbsp;&nbsp;k = x · y held</>,
+                <>pricing&nbsp;&nbsp;&nbsp;&nbsp;exact Q64 integer math</>,
+                <>fees&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bps split · never backward</>,
+              ]}
+            />
           </Reveal>
         </ol>
       </section>
@@ -546,11 +642,11 @@ export function Landing() {
           </h2>
         </Reveal>
         <div className="lp-status">
-          <Reveal className="lp-status__col">
+          <Reveal className="lp-status__col lp-tick">
             <span className="lp-pill lp-pill--live">
               <span className="lp-dot lp-dot--on" /> working now
             </span>
-            <ul>
+            <ul className="lp-checklist">
               <li>Bonding curve quoting and trading arithmetic, byte exact with the program</li>
               <li>Merkle settlement building and local proof verification in the browser</li>
               <li>Fee split accounting with exact remainder assignment</li>
@@ -560,6 +656,9 @@ export function Landing() {
             </ul>
           </Reveal>
           <Reveal delay={140} className="lp-status__col lp-status__col--gated">
+            <span className="lp-stamp" aria-hidden="true">
+              fail closed
+            </span>
             <span className="lp-pill lp-pill--held">
               <span className="lp-dot lp-dot--warn" /> gated, fail closed
             </span>
@@ -593,14 +692,22 @@ export function Landing() {
             Seven programs. One domain <em>each</em>.
           </h2>
         </Reveal>
-        <div className="lp-programs">
+        <div className="lp-registry">
+          <Reveal className="lp-registry__head" aria-hidden="true">
+            <span>idx</span>
+            <span>program</span>
+            <span>domain</span>
+            <span>declared id</span>
+            <span />
+          </Reveal>
           {(Object.keys(PROGRAM_IDS) as ProgramKey[]).map((k, i) => (
-            <Reveal key={k} delay={(i % 2) * 100 + Math.floor(i / 2) * 60}>
-              <a className="lp-program" href={explorerAddress(PROGRAM_IDS[k])} target="_blank" rel="noreferrer">
-                <span className="lp-program__name">{PROGRAM_LABELS[k]}</span>
-                <span className="lp-program__role">{PROGRAM_ROLES[k]}</span>
-                <span className="lp-program__addr address">{short(PROGRAM_IDS[k], 8, 6)}</span>
-                <span className="lp-program__arrow" aria-hidden="true">
+            <Reveal key={k} delay={i * 70}>
+              <a className="lp-regrow" href={explorerAddress(PROGRAM_IDS[k])} target="_blank" rel="noreferrer">
+                <span className="lp-regrow__idx">{String(i + 1).padStart(2, "0")}</span>
+                <span className="lp-regrow__name">{PROGRAM_LABELS[k]}</span>
+                <span className="lp-regrow__role">{PROGRAM_ROLES[k]}</span>
+                <span className="lp-regrow__addr address">{short(PROGRAM_IDS[k], 8, 6)}</span>
+                <span className="lp-regrow__arrow" aria-hidden="true">
                   ↗
                 </span>
               </a>
