@@ -1,8 +1,8 @@
 {
-  "name": "norr-fun-solana",
+  "name": "norr",
   "version": "0.1.0",
   "private": true,
-  "description": "Clean-room Solana migration of norr.fun",
+  "description": "Solana-native coordination and token launch protocol",
   "packageManager": "pnpm@10.34.5",
   "engines": {
     "node": ">=22"

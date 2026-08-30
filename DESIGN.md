@@ -5,11 +5,7 @@
 The system norr.fun commits to. Change it here first; anything that drifts from this is a
 bug, not a variation.
 
-This is the Avalanche design document with **one substitution**: the accent. Everything
-else — the ground, the ink ramp, the hairlines, the square geometry, the type scale, the
-primitives, the motion policy, the anti-patterns — is unchanged, because it was working.
-That the retheme is a token edit rather than a rewrite is the property the token-only
-palette exists to provide, and this is the third time it has paid for itself.
+The complete visual and interaction design specification for Norr on Solana. Ground, ink ramp, hairlines, square geometry, type scale, primitives, motion policy, and anti-patterns.
 
 ---
 
@@ -26,7 +22,7 @@ has structure.
 
 ## The accent, restated honestly
 
-The previous accent, Avalanche red `#e84142`, was justified by derivation: *the colour of
+The previous accent,  red `#e84142`, was justified by derivation: *the colour of
 the chain this runs on.* On Solana that justification is gone. Keeping the red would leave
 a brand-arbitrary hue defended by an argument that no longer applies — and worse, it would
 leave the accent **sharing a hue with `--loss`**, which the old document had to work around
@@ -53,7 +49,7 @@ would undo that.
 **`#9945FF` as accent *text* — rejected.** It measures 4.41:1 on `#08090a`, under AA. It
 remains the brand hue of record and is used for non-text marks, but a figure or a label
 set in it would fail. This is the same call the old document made when it refused white on
-Avalanche red at 3.99:1.
+red at 3.99:1.
 
 ### What was chosen
 
@@ -67,7 +63,7 @@ Three values of one hue, each with a stated job and a measured contrast.
 | `--sol-wash` | `#150A2B` | tint block behind a live mark. | — |
 
 **Foreground on a filled control is white, not dark ink — and this inverts the previous
-rule.** On Avalanche red, white measured 3.99:1 and the fix belonged on the foreground. On
+rule.** On pure red, white measured 3.99:1 and the fix belonged on the foreground. On
 Solana violet the arithmetic flips: `#08090a` on `#9945FF` is 4.41:1 (fails), warm `--ink`
 on it is 3.73:1 (fails), and pure white is 4.52:1 (passes, but thinly). Rather than ship a
 4.52:1 primary action, the fill drops to `--sol-deep` and white on it measures 8.0:1. The
@@ -171,7 +167,7 @@ Two cascade rules learned the hard way and still true:
 
 ### Wordmark
 
-The chromatic split is the mark's identity and stays. Channel A moves from Avalanche red
+The chromatic split is the mark's identity and stays. Channel A moves from warm red
 to `--sol`; channel B stays `--fjord` `#8d8a82`.
 
 **Channel B must not become Solana green.** A violet/mint split is the vendor gradient in
@@ -213,7 +209,7 @@ All unchanged in structure. Four consume the accent and therefore change value o
 distinguish 90% of a small goal from 9% of a large one, which on a launch page is the
 entire question.
 
-**The avatar's chain badge** carried the Avalanche mark. It now carries the Solana mark,
+**The avatar's chain badge** carries the Solana mark,
 and the badge stays — a launchpad that will eventually index more than one network needs
 the slot.
 
