@@ -1,7 +1,7 @@
 #![allow(deprecated, clippy::too_many_arguments, unexpected_cfgs)]
 use anchor_lang::prelude::*;
 
-declare_id!("C1aim11111111111111111111111111111111111111");
+declare_id!("68AW7FczGrPoeRfYUVeQnu6Aa55HnbgtMhVgRdTCwbSq");
 
 pub mod state {
     pub const ACCEPTING: u8 = 0;

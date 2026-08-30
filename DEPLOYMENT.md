@@ -31,7 +31,7 @@ Configure the following environment variables in your hosting dashboard:
 
 ## 3. SPA Routing & Rewrites
 
-Because Norr is a single-page application with 19 routes (e.g. `/desks`, `/raise/:sale`, `/private`), all client requests must rewrite to `/index.html`:
+Because Norr is a single-page application with 13 routes (e.g. `/desks`, `/raise/:sale`, `/private`), all client requests must rewrite to `/index.html`:
 
 - **Vercel:** Handled automatically via [`apps/web/vercel.json`](apps/web/vercel.json).
 - **Netlify / Cloudflare Pages:** Handled automatically via [`apps/web/public/_redirects`](apps/web/public/_redirects).
