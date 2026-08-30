@@ -1,16 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useCluster } from "../lib/status";
-import {
-  CT_EVIDENCE,
-  PROGRAM_IDS,
-  PROGRAM_LABELS,
-  ZK_PROOF_PROGRAM,
-  explorerAddress,
-  explorerTx,
-  short,
-  type ProgramKey,
-} from "../lib/config";
+import { PROGRAM_IDS, PROGRAM_LABELS, explorerAddress, short, type ProgramKey } from "../lib/config";
 
 /* ------------------------------------------------------------------ motion */
 
@@ -170,9 +161,9 @@ function IslandNav() {
   }, [open]);
   const close = useCallback(() => setOpen(false), []);
   const links: readonly (readonly [string, string])[] = [
+    ["#why", "Why"],
     ["#how", "How it works"],
-    ["#devnet", "Devnet evidence"],
-    ["#programs", "Programs"],
+    ["#programs", "Architecture"],
     ["#faq", "FAQ"],
   ];
   return (
@@ -358,6 +349,28 @@ const PROGRAM_ROLES: Record<ProgramKey, string> = {
   wrap: "Confidential token adapter, fail closed until proven",
 };
 
+/** Star-chart coordinates (percent of the orrery canvas) for each program,
+ *  plus the constellation edges drawn between them. */
+const CONSTELLATION: Record<ProgramKey, { x: number; y: number }> = {
+  launch: { x: 50, y: 12 },
+  market: { x: 72, y: 32 },
+  fees: { x: 88, y: 62 },
+  claim: { x: 58, y: 78 },
+  boards: { x: 26, y: 68 },
+  social: { x: 10, y: 40 },
+  wrap: { x: 34, y: 42 },
+};
+const CONSTELLATION_EDGES: readonly (readonly [ProgramKey, ProgramKey])[] = [
+  ["launch", "market"],
+  ["market", "fees"],
+  ["market", "claim"],
+  ["fees", "claim"],
+  ["launch", "wrap"],
+  ["wrap", "social"],
+  ["social", "boards"],
+  ["boards", "claim"],
+];
+
 const FAQ: readonly (readonly [string, string])[] = [
   [
     "What does Norr do?",
@@ -373,7 +386,7 @@ const FAQ: readonly (readonly [string, string])[] = [
   ],
   [
     "What actually runs on chain today?",
-    "Five of the six steps of the confidential pipeline are confirmed on Solana Devnet: mint creation, account configuration, ElGamal key derivation, zero knowledge proof verification on the native proof program, and an encrypted deposit with an applied pending balance. The evidence addresses on this page are re read live from RPC.",
+    "Five of the six steps of the confidential pipeline are confirmed on Solana Devnet: mint creation, account configuration, ElGamal key derivation, zero knowledge proof verification on the native proof program, and an encrypted deposit with an applied pending balance. The evidence addresses are re read live from RPC on the app's private workspace page.",
   ],
   [
     "Why is the confidential transfer itself gated?",
@@ -428,9 +441,9 @@ export function Landing() {
             <Link className="lp-btn lp-btn--primary" to="/launches">
               Open the app
             </Link>
-            <a className="lp-btn lp-btn--ghost" href="#devnet">
+            <Link className="lp-btn lp-btn--ghost" to="/private">
               See the Devnet evidence
-            </a>
+            </Link>
           </div>
           <HeroPanel evidenceLive={evidenceLive} checked={ev.checked} slot={c.slot} connected={c.connected} />
         </div>
@@ -594,85 +607,94 @@ export function Landing() {
         caption={"the contribution window\nsolana devnet"}
       />
 
-      {/* --------------------------------------------------------- tagline */}
-      <section className="lp-section lp-section--tagline">
-        <ScrollTagline lines={["If the chain cannot prove it,", "Norr will not show it."]} />
-        <Reveal delay={200}>
-          <p className="lp-tagline__sub">
-            No invented figures, no fake success paths, no fallback ledger. Every write simulates against the cluster
-            first, and every gated feature says exactly why it is gated.
-          </p>
-        </Reveal>
-      </section>
-
-      {/* ---------------------------------------------------------- devnet */}
-      <section className="lp-section" id="devnet">
-        <Reveal>
-          <span className="lp-label">§03 — Devnet evidence</span>
-          <h2 className="lp-h2">
-            The confidential pipeline is <em>real</em>, and you can check it
-          </h2>
-          <p className="lp-copy">
-            The addresses below were created by this project on Solana Devnet and are re read from RPC every time this
-            page loads — the status column is a live result, not a screenshot.
-          </p>
-        </Reveal>
-        <Reveal delay={140} className="lp-evidence">
-          <EvRow label="Confidential mint with CT extension" addr={CT_EVIDENCE.mint} live={ev.checked ? ev.mintLive : null} />
-          <EvRow label="Configured confidential token account" addr={CT_EVIDENCE.tokenAccount} live={ev.checked ? ev.accountLive : null} />
-          <EvRow label="Equality proof context" addr={CT_EVIDENCE.equalityProofContext} live={ev.checked ? ev.proofContextsLive >= 1 : null} />
-          <EvRow label="Validity proof context (3 handles)" addr={CT_EVIDENCE.validityProofContext} live={ev.checked ? ev.proofContextsLive >= 2 : null} />
-          <EvRow label="Range proof context (128 bit)" addr={CT_EVIDENCE.rangeProofContext} live={ev.checked ? ev.proofContextsLive >= 3 : null} />
-          <EvRow label="Encrypted deposit, applied on chain" tx={CT_EVIDENCE.depositTx} live={null} />
-        </Reveal>
-        <Reveal delay={200}>
-          <p className="lp-copy lp-fine">
-            Proof contexts live on the native proof program <code>{short(ZK_PROOF_PROGRAM, 12, 4)}</code>. The final
-            pipeline step, the confidential transfer itself, is gated — see below.
-          </p>
-        </Reveal>
-      </section>
-
-      {/* ---------------------------------------------------------- status */}
-      <section className="lp-section" id="status">
-        <Reveal>
-          <span className="lp-label">§04 — Capability status</span>
-          <h2 className="lp-h2">
-            What works today, and the one thing that is <em>gated</em>
-          </h2>
-        </Reveal>
-        <div className="lp-status">
-          <Reveal className="lp-status__col lp-tick">
-            <span className="lp-pill lp-pill--live">
-              <span className="lp-dot lp-dot--on" /> working now
-            </span>
-            <ul className="lp-checklist">
-              <li>Bonding curve quoting and trading arithmetic, byte exact with the program</li>
-              <li>Merkle settlement building and local proof verification in the browser</li>
-              <li>Fee split accounting with exact remainder assignment</li>
-              <li>Live wallet, balance, and transaction reads from any Solana RPC</li>
-              <li>Confidential setup pipeline, steps one through five, confirmed on Devnet</li>
-              <li>Per program deployment probing — the app never assumes a program exists</li>
-            </ul>
+      {/* --------------------------- tagline — over the sealed-vault artwork */}
+      <section className="lp-vow" id="vow">
+        <div className="lp-vow__art" aria-hidden="true">
+          <img src="/art-vault.webp" alt="" loading="lazy" />
+          <div className="lp-vow__fade" />
+        </div>
+        <div className="lp-vow__inner">
+          <ScrollTagline lines={["If the chain cannot prove it,", "Norr will not show it."]} />
+          <Reveal delay={200}>
+            <p className="lp-tagline__sub">
+              No invented figures, no fake success paths, no fallback ledger. Every write simulates against the
+              cluster first, and anything unproven stays sealed behind an on chain capability check.
+            </p>
           </Reveal>
-          <Reveal delay={140} className="lp-status__col lp-status__col--gated">
-            <span className="lp-stamp" aria-hidden="true">
-              fail closed
+          <Reveal delay={320} className="lp-vow__seals">
+            <span className="lp-pill lp-pill--live">
+              <span className="lp-dot lp-dot--on" /> devnet evidence · live in the app
             </span>
             <span className="lp-pill lp-pill--held">
-              <span className="lp-dot lp-dot--warn" /> gated, fail closed
+              <span className="lp-dot lp-dot--warn" /> private transfer · fail closed
             </span>
-            <ul>
-              <li>
-                The confidential transfer instruction itself. The canonical Token 2022 program on public clusters is
-                compiled without <code>zk-ops</code>, so its Transfer handler rejects every instruction.
-              </li>
-              <li>
-                Norr refuses to fake it: wrap, private transfer, withdraw, and unwrap stay locked behind an on chain
-                capability proof (<code>P0Required</code>) rather than falling back to an unverified ledger.
-              </li>
-              <li>When the upstream build enables zk ops, the pipeline resumes with zero architecture changes.</li>
-            </ul>
+          </Reveal>
+        </div>
+        <span className="lp-vow__cap" aria-hidden="true">{"the sealed path\nP0Required"}</span>
+      </section>
+
+      {/* ------------------- architecture — a constellation over a star atlas */}
+      <section className="lp-orrery" id="programs">
+        <div className="lp-orrery__art" aria-hidden="true">
+          <img src="/art-atlas.webp" alt="" loading="lazy" />
+          <div className="lp-orrery__fade" />
+        </div>
+        <div className="lp-orrery__inner">
+          <Reveal>
+            <span className="lp-label">§03 — Architecture</span>
+            <h2 className="lp-h2">
+              Seven programs. One <em>constellation</em>.
+            </h2>
+            <p className="lp-copy">
+              Each Anchor program owns exactly one domain. The app probes every declared ID against the connected RPC
+              — a star only lights up where the program is actually executable.
+            </p>
+          </Reveal>
+          <Reveal delay={160} className="lp-chart">
+            <svg className="lp-chart__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              {CONSTELLATION_EDGES.map(([a, b], i) => (
+                <line
+                  key={i}
+                  x1={CONSTELLATION[a].x}
+                  y1={CONSTELLATION[a].y}
+                  x2={CONSTELLATION[b].x}
+                  y2={CONSTELLATION[b].y}
+                  pathLength={1}
+                  style={{ animationDelay: `${400 + i * 180}ms` }}
+                />
+              ))}
+            </svg>
+            {(Object.keys(PROGRAM_IDS) as ProgramKey[]).map((k, i) => {
+              const pos = CONSTELLATION[k];
+              const side = pos.x > 68 ? "r" : pos.x < 32 ? "l" : "c";
+              return (
+                <a
+                  key={k}
+                  className="lp-star"
+                  href={explorerAddress(PROGRAM_IDS[k])}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ left: `${pos.x}%`, top: `${pos.y}%`, animationDelay: `${i * 0.7}s` }}
+                  data-side={side}
+                >
+                  <span className="lp-star__dot" />
+                  <span className="lp-star__idx">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="lp-star__name">{PROGRAM_LABELS[k]}</span>
+                  <span className="lp-star__card">
+                    <span className="lp-star__role">{PROGRAM_ROLES[k]}</span>
+                    <span className="lp-star__addr address">{short(PROGRAM_IDS[k], 6, 5)} ↗</span>
+                  </span>
+                </a>
+              );
+            })}
+            <span className="lp-chart__cap lp-chart__cap--l" aria-hidden="true">{"fig. 03 — program atlas"}</span>
+            <span className="lp-chart__cap lp-chart__cap--r" aria-hidden="true">{"solana devnet"}</span>
+          </Reveal>
+          <Reveal delay={240}>
+            <p className="lp-copy lp-fine lp-orrery__hint">
+              Hover a star for its domain — or open it on the explorer. norr-wrap is the sealed one: the confidential
+              adapter that stays fail closed until the cluster proves Token 2022 zk ops.
+            </p>
           </Reveal>
         </div>
       </section>
@@ -684,48 +706,10 @@ export function Landing() {
         flip
       />
 
-      {/* -------------------------------------------------------- programs */}
-      <section className="lp-section" id="programs">
-        <Reveal>
-          <span className="lp-label">§05 — Architecture</span>
-          <h2 className="lp-h2">
-            Seven programs. One domain <em>each</em>.
-          </h2>
-        </Reveal>
-        <div className="lp-registry">
-          <Reveal className="lp-registry__head" aria-hidden="true">
-            <span>idx</span>
-            <span>program</span>
-            <span>domain</span>
-            <span>declared id</span>
-            <span />
-          </Reveal>
-          {(Object.keys(PROGRAM_IDS) as ProgramKey[]).map((k, i) => (
-            <Reveal key={k} delay={i * 70}>
-              <a className="lp-regrow" href={explorerAddress(PROGRAM_IDS[k])} target="_blank" rel="noreferrer">
-                <span className="lp-regrow__idx">{String(i + 1).padStart(2, "0")}</span>
-                <span className="lp-regrow__name">{PROGRAM_LABELS[k]}</span>
-                <span className="lp-regrow__role">{PROGRAM_ROLES[k]}</span>
-                <span className="lp-regrow__addr address">{short(PROGRAM_IDS[k], 8, 6)}</span>
-                <span className="lp-regrow__arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </a>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal delay={160}>
-          <p className="lp-copy lp-fine">
-            Anchor programs with declared canonical IDs. The app probes each ID against the connected RPC and only
-            enables write actions where a program is actually executable.
-          </p>
-        </Reveal>
-      </section>
-
       {/* ------------------------------------------------------------- faq */}
       <section className="lp-section" id="faq">
         <Reveal>
-          <span className="lp-label">§06 — FAQ</span>
+          <span className="lp-label">§04 — FAQ</span>
           <h2 className="lp-h2">
             Direct <em>answers</em>
           </h2>
@@ -796,16 +780,6 @@ function SolanaMark() {
   );
 }
 
-function CardIcon({ d }: { d: string }) {
-  return (
-    <span className="lp-card__icon" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 24 24">
-        <path fill="currentColor" d={d} />
-      </svg>
-    </span>
-  );
-}
-
 function HeroPanel({
   evidenceLive,
   checked,
@@ -849,24 +823,4 @@ function HeroPanel({
   );
 }
 
-function EvRow({ label, addr, tx, live }: { label: string; addr?: string; tx?: string; live: boolean | null }) {
-  const href = addr ? explorerAddress(addr) : tx ? explorerTx(tx) : "#";
-  const display = addr ?? tx ?? "";
-  return (
-    <a className="lp-evrow" href={href} target="_blank" rel="noreferrer">
-      <span className="lp-evrow__label">{label}</span>
-      <span className="address">{short(display, 10, 6)}</span>
-      <span className="lp-evrow__live">
-        {live === null ? (
-          <span className="muted fine">explorer ↗</span>
-        ) : live ? (
-          <span className="lp-live-pill">
-            <span className="lp-dot lp-dot--on" /> live on chain
-          </span>
-        ) : (
-          <span className="loss fine">not found</span>
-        )}
-      </span>
-    </a>
-  );
-}
+
