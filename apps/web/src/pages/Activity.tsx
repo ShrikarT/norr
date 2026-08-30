@@ -39,7 +39,12 @@ export function Activity() {
   return (
     <>
       <PageHead
-        title="Activity"
+        kicker="§ account / activity"
+        title={
+          <>
+            On-chain <em>activity</em>
+          </>
+        }
         copy="The connected wallet's most recent transactions, read live from the cluster. The optional indexer adds protocol-decoded history when configured; it never decides state."
       />
       {!wallet.connected ? (

@@ -226,6 +226,62 @@ function IslandNav() {
   );
 }
 
+/* ------------------------------------------------------------------ pieces */
+
+/** Full-bleed matte-painting break with an overlaid serif quote and a mono
+ *  archive caption — the hero's visual language carried mid-page. */
+function ArtBreak({
+  src,
+  quote,
+  caption,
+  flip = false,
+}: {
+  src: string;
+  quote: string;
+  caption: string;
+  flip?: boolean;
+}) {
+  return (
+    <figure className="lp-break" data-flip={flip}>
+      <img src={src} alt="" loading="lazy" />
+      <div className="lp-break__shade" aria-hidden="true" />
+      <Reveal className="lp-break__quote">
+        <blockquote>{quote}</blockquote>
+      </Reveal>
+      <figcaption className="lp-break__cap">{caption}</figcaption>
+    </figure>
+  );
+}
+
+/** Infinite mono ticker of protocol vocabulary. */
+function Ticker() {
+  const terms = [
+    "twisted elgamal",
+    "128-bit range proofs",
+    "merkle settlement",
+    "constant product curve",
+    "fail closed by design",
+    "token-2022 confidential transfers",
+    "native zk proof program",
+    "timelocked refunds",
+    "no fallback ledger",
+  ];
+  const row = terms.map((t, i) => (
+    <span key={i}>
+      {t}
+      <i aria-hidden="true">·</i>
+    </span>
+  ));
+  return (
+    <div className="lp-ticker" aria-hidden="true">
+      <div className="lp-ticker__row">
+        {row}
+        {row}
+      </div>
+    </div>
+  );
+}
+
 /* --------------------------------------------------------------------- data */
 
 const PROGRAM_ROLES: Record<ProgramKey, string> = {
@@ -296,9 +352,9 @@ export function Landing() {
             <SolanaMark /> Built on Solana · live against Devnet
           </p>
           <h1 className="lp-hero__title lp-rise" style={{ animationDelay: "180ms" }}>
-            Private contribution.
+            Private <em>contribution</em>.
             <br />
-            Public settlement.
+            Public <em>settlement</em>.
           </h1>
           <p className="lp-hero__sub lp-rise" style={{ animationDelay: "300ms" }}>
             Norr is a token launch protocol where contribution amounts stay encrypted while a raise is open, then
@@ -350,24 +406,31 @@ export function Landing() {
         </Reveal>
       </section>
 
+      <Ticker />
+
       {/* ---------------------------------------------------------- problem */}
       <section className="lp-section" id="why">
         <Reveal>
-          <span className="lp-label">The problem</span>
-          <h2 className="lp-h2">Public raises leak everything before the market exists</h2>
+          <span className="lp-label">§01 — The problem</span>
+          <h2 className="lp-h2">
+            Public raises leak <em>everything</em> before the market exists
+          </h2>
         </Reveal>
         <div className="lp-cols">
           <Reveal delay={0} className="lp-card">
+            <span className="lp-sublabel">— §01.1 / speed</span>
             <CardIcon d="M13 3 4 14h6l-1 7 9-11h-6l1-7z" />
             <h3>Front running</h3>
             <p>Visible contribution flow lets bots snipe allocations and position against a launch before price discovery begins.</p>
           </Reveal>
           <Reveal delay={120} className="lp-card">
+            <span className="lp-sublabel">— §01.2 / intent</span>
             <CardIcon d="M12 4a8 8 0 1 0 8 8h-8V4z M14 2v8h8a8 8 0 0 0-8-8z" />
             <h3>Size signaling</h3>
             <p>Large contributions are copied the moment they land. Wallets telegraph intent they never chose to publish.</p>
           </Reveal>
           <Reveal delay={240} className="lp-card">
+            <span className="lp-sublabel">— §01.3 / trust</span>
             <CardIcon d="M4 5h16v3H4z M4 10.5h16v3H4z M4 16h10v3H4z" />
             <h3>Unverifiable settlement</h3>
             <p>Many launchpads settle off chain or by operator spreadsheet. Contributors cannot independently check their own allocation.</p>
@@ -384,8 +447,10 @@ export function Landing() {
       {/* ------------------------------------------------------------- how */}
       <section className="lp-section" id="how">
         <Reveal>
-          <span className="lp-label">How it works</span>
-          <h2 className="lp-h2">Three phases, one verifiable lifecycle</h2>
+          <span className="lp-label">§02 — How it works</span>
+          <h2 className="lp-h2">
+            Three phases. One <em>verifiable</em> lifecycle.
+          </h2>
         </Reveal>
         <ol className="lp-steps">
           <Reveal as="li" delay={0}>
@@ -427,6 +492,12 @@ export function Landing() {
         </ol>
       </section>
 
+      <ArtBreak
+        src="/art-caravan.webp"
+        quote="The amount is the only secret. Everyone can see who walked — no one can weigh what they carried."
+        caption={"the contribution window\nsolana devnet"}
+      />
+
       {/* --------------------------------------------------------- tagline */}
       <section className="lp-section lp-section--tagline">
         <ScrollTagline lines={["If the chain cannot prove it,", "Norr will not show it."]} />
@@ -441,8 +512,10 @@ export function Landing() {
       {/* ---------------------------------------------------------- devnet */}
       <section className="lp-section" id="devnet">
         <Reveal>
-          <span className="lp-label">Devnet evidence</span>
-          <h2 className="lp-h2">The confidential pipeline is real, and you can check it</h2>
+          <span className="lp-label">§03 — Devnet evidence</span>
+          <h2 className="lp-h2">
+            The confidential pipeline is <em>real</em>, and you can check it
+          </h2>
           <p className="lp-copy">
             The addresses below were created by this project on Solana Devnet and are re read from RPC every time this
             page loads — the status column is a live result, not a screenshot.
@@ -467,8 +540,10 @@ export function Landing() {
       {/* ---------------------------------------------------------- status */}
       <section className="lp-section" id="status">
         <Reveal>
-          <span className="lp-label">Capability status</span>
-          <h2 className="lp-h2">What works today, and the one thing that is gated</h2>
+          <span className="lp-label">§04 — Capability status</span>
+          <h2 className="lp-h2">
+            What works today, and the one thing that is <em>gated</em>
+          </h2>
         </Reveal>
         <div className="lp-status">
           <Reveal className="lp-status__col">
@@ -503,11 +578,20 @@ export function Landing() {
         </div>
       </section>
 
+      <ArtBreak
+        src="/art-hall.webp"
+        quote="Settlement is a public act — a root anyone can recompute, a ledger no operator can quietly edit."
+        caption={"the settlement record\nmerkle commitment"}
+        flip
+      />
+
       {/* -------------------------------------------------------- programs */}
       <section className="lp-section" id="programs">
         <Reveal>
-          <span className="lp-label">Architecture</span>
-          <h2 className="lp-h2">Seven programs, one domain each</h2>
+          <span className="lp-label">§05 — Architecture</span>
+          <h2 className="lp-h2">
+            Seven programs. One domain <em>each</em>.
+          </h2>
         </Reveal>
         <div className="lp-programs">
           {(Object.keys(PROGRAM_IDS) as ProgramKey[]).map((k, i) => (
@@ -534,8 +618,10 @@ export function Landing() {
       {/* ------------------------------------------------------------- faq */}
       <section className="lp-section" id="faq">
         <Reveal>
-          <span className="lp-label">FAQ</span>
-          <h2 className="lp-h2">Direct answers</h2>
+          <span className="lp-label">§06 — FAQ</span>
+          <h2 className="lp-h2">
+            Direct <em>answers</em>
+          </h2>
         </Reveal>
         <Reveal delay={120} className="lp-faq">
           {FAQ.map(([q, a]) => (
@@ -556,7 +642,9 @@ export function Landing() {
           <div className="lp-final__fade" />
         </div>
         <Reveal className="lp-final__inner">
-          <h2 className="lp-h2 lp-final__h">See it running against Devnet</h2>
+          <h2 className="lp-h2 lp-final__h">
+            See it <em>running</em> against Devnet
+          </h2>
           <p className="lp-copy">
             Browse launches, quote trades with the exact on chain arithmetic, verify a Merkle proof in your browser,
             and inspect the confidential transfer evidence live.

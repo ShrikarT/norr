@@ -12,7 +12,12 @@ export function Owed() {
   return (
     <>
       <PageHead
-        title="Owed to you"
+        kicker="§ account / entitlements"
+        title={
+          <>
+            Owed to <em>you</em>
+          </>
+        }
         copy="norr-fees accrues each recipient's share with exact delta accounting: entitlement is order independent, donation surplus is isolated, and accrual never moves backward."
       />
       <div className="stack">

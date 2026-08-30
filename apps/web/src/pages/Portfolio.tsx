@@ -61,7 +61,12 @@ export function Portfolio() {
   return (
     <>
       <PageHead
-        title="Portfolio"
+        kicker="§ account / holdings"
+        title={
+          <>
+            Your <em>portfolio</em>
+          </>
+        }
         copy="Everything on this page is read directly from the connected RPC — SOL balance and every SPL Token and Token-2022 account the wallet owns."
       />
       {!wallet.connected ? (

@@ -63,6 +63,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <a className="skip-link" href="#content">
         Skip to content
       </a>
+      <div className="lp-grain lp-grain--app" aria-hidden="true" />
       <div className="app-shell">
         <aside className="rail">
           <div className="rail__brand">

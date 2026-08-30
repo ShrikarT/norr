@@ -48,7 +48,7 @@ export function LaunchDetail() {
   return (
     <>
       <PageHead
-        kicker={launch.model === "instant" ? "instant market" : "sealed raise"}
+        kicker={launch.model === "instant" ? "§ launch / instant market" : "§ launch / sealed raise"}
         title={launch.name}
         copy={launch.description}
       />

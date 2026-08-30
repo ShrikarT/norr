@@ -63,6 +63,10 @@ pre { margin: 0; }
 /* -- page scaffolding ---------------------------------------------------- */
 .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 24px; }
 .page-head p { max-width: 640px; margin: 10px 0 0; color: var(--ink-3); text-wrap: pretty; }
+.page-head .label { color: var(--ochre); }
+
+/* editorial serif accent carried from the landing into the app */
+.lead em { font-family: var(--face-serif); font-style: italic; font-weight: 400; letter-spacing: 0; background: linear-gradient(90deg, var(--ochre), #f0b45e); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.06em; }
 .panel { position: relative; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r-panel); transition: border-color 500ms var(--ease); overflow: hidden; }
 .panel:hover { border-color: var(--rule-strong); }
 .panel__head { min-height: 44px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--rule); }

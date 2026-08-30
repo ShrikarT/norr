@@ -31,7 +31,12 @@ export function StartIndex() {
   return (
     <>
       <PageHead
-        title="Choose the model"
+        kicker="§ launch / model"
+        title={
+          <>
+            Choose the <em>model</em>
+          </>
+        }
         copy="Both models share the same settlement, fee routing, and social layers. They differ in one thing: whether contribution amounts are public while the launch is open."
       />
       <div className="grid grid--3">
@@ -82,7 +87,7 @@ export function CreateLaunch() {
   return (
     <>
       <PageHead
-        kicker={mode === "instant" ? "instant market" : "sealed raise"}
+        kicker={mode === "instant" ? "§ launch / instant market" : "§ launch / sealed raise"}
         title={mode === "instant" ? "Configure an instant launch" : "Configure a sealed raise"}
         copy="Parameters are validated locally with the exact program arithmetic. Nothing is submitted until every constraint passes and you sign."
       />
