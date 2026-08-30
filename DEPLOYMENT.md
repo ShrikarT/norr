@@ -1,4 +1,4 @@
-﻿# Norr Web Application — Production Deployment Guide
+# Norr Web Application — Production Deployment Guide
 
 This guide details how to deploy the Norr web application (`@norr/web`) to any standard static hosting platform (e.g. Vercel, Netlify, Cloudflare Pages, AWS S3/CloudFront).
 
@@ -33,7 +33,7 @@ Configure the following environment variables in your hosting dashboard:
 
 Because Norr is a single-page application with 13 routes (e.g. `/desks`, `/raise/:sale`, `/private`), all client requests must rewrite to `/index.html`:
 
-- **Vercel:** Handled automatically via [`apps/web/vercel.json`](apps/web/vercel.json).
+- **Vercel:** Handled automatically via Vite Framework Preset (native zero-configuration SPA routing).
 - **Netlify / Cloudflare Pages:** Handled automatically via [`apps/web/public/_redirects`](apps/web/public/_redirects).
 - **Nginx / Custom Server:**
   ```nginx
