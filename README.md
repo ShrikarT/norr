@@ -59,9 +59,9 @@ User Wallet
 
 ## Solana Programs
 
-The protocol consists of 7 modular Anchor programs:
+The protocol consists of 7 modular Anchor programs. **Deployment status:** the program IDs below are the declared canonical IDs; they are **not yet deployed** to a public cluster. The web app probes each ID against the connected RPC and only enables write actions when a program is actually executable — nothing assumes deployment.
 
-| Program | Program ID (Devnet Canonical) | Role |
+| Program | Program ID (declared; deployment probed live by the app) | Role |
 | :--- | :--- | :--- |
 | **`norr-launch`** | `BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu` | Launch parameters, lifecycle states, and metadata |
 | **`norr-market`** | `DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY` | Constant-product bonding curve ($k = \text{effective\_base} \times \text{token\_reserve}$) with fee routing |
@@ -73,15 +73,15 @@ The protocol consists of 7 modular Anchor programs:
 
 ---
 
-## What's Live & Verified
+## What's Real & Verified
 
 ### Working Public Systems
 - **Bonding Curve Arithmetic:** Exact integer pricing math, ceiling division (`ceilDiv`), and reserve product invariant preservation.
 - **Pro-Rata Fee Distribution:** Accrual delta accounting with non-repayable donation surplus isolation.
 - **On-Chain Social & Desks:** Full thread indexing, comment hierarchies, marker accounts, and desk curation.
 - **Merkle Settlement:** Domain-separated leaf verification for claim allocations and refund escrows.
-- **Frontend Application:** 19-route React single-page application with live Solana wallet connection.
-- **Automated Test Suite:** 23 passing tests covering unit, property, and invariant behaviors.
+- **Frontend Application:** 13-route React single-page application with live Solana wallet connection, live genesis-hash cluster verification, and live per-program deployment probing. No fake success paths: every write simulates first and only reports what the cluster confirms.
+- **Automated Test Suite:** 22 passing tests covering unit, property, and invariant behaviors.
 
 ### Real Devnet Verification Evidence
 - **Confidential Mint:** `6RBs6aoEpQZ59aKfpqWE2SnAX3cysBo3whFuhBoe9suT` (Tx: `hcdG2LHttVqiRHsA4c3wAZneNazx9Vcv8HMFdcGWYrVSDj5QXLzj2LuckTogY7wDoHusXzCxCMbuf9McEgUTgS9`)

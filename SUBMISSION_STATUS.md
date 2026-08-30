@@ -12,7 +12,7 @@ Norr follows a strict **fail-closed architecture**: if cryptographic or on-chain
 
 ## 2. Architecture & Program Overview
 
-The protocol consists of 7 modular Anchor programs on Solana:
+The protocol consists of 7 modular Anchor programs on Solana. The IDs below are declared canonical IDs; they are **not yet deployed** to a public cluster, and the app verifies this live rather than assuming it:
 
 ```text
 User Wallet
@@ -26,7 +26,7 @@ User Wallet
      +---> [norr-wrap: Confidential Transfer Adapter (Gated via P0 / ZK Proof Program)]
 ```
 
-| Program | Program ID (Devnet Canonical) | Role |
+| Program | Program ID (declared; not yet deployed — probed live by the app) | Role |
 | :--- | :--- | :--- |
 | **`norr-launch`** | `BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu` | Launch initialization, parameters, and metadata |
 | **`norr-market`** | `DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY` | Constant-product bonding curve buy/sell trading with exact fee routing |

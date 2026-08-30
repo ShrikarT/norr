@@ -1,6 +1,50 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { Activity, BoardDetail, Boards, ChainGuard, CommandPalette, Compare, CreateLaunch, Earnings, ErrorBoundary, Feed, LaunchDetail, LaunchModels, Portfolio, Preferences, PrivateVault, Profile, Shell, Shortcuts, Tour } from "./components/surfaces";
-export const ROUTE_ENTRIES=["/","/raise/:sale","/start","/start/instant","/start/raise","/desks","/desk/:slug","/portfolio","/compare","/owed","/activity","/me","/u/:address","/private","/settings","/:cluster/raise/:sale","/:cluster/desk/:slug","/:cluster/u/:address","*"] as const;
-export default function App(){return <Shell><CommandPalette/><Shortcuts/><Tour/><ErrorBoundary label="Route"><Routes><Route path="/" element={<FeedRoute/>}/><Route path="/raise/:sale" element={<LaunchDetail/>}/><Route path="/start" element={<LaunchModels/>}/><Route path="/start/instant" element={<CreateRoute mode="instant"/>}/><Route path="/start/raise" element={<CreateRoute mode="full"/>}/><Route path="/desks" element={<Boards/>}/><Route path="/desk/:slug" element={<BoardDetail/>}/><Route path="/portfolio" element={<Portfolio/>}/><Route path="/compare" element={<Compare/>}/><Route path="/owed" element={<Earnings/>}/><Route path="/activity" element={<Activity/>}/><Route path="/me" element={<Profile/>}/><Route path="/u/:address" element={<Profile/>}/><Route path="/private" element={<PrivateVault/>}/><Route path="/settings" element={<Preferences/>}/><Route path="/:cluster/raise/:sale" element={<ChainGuard><LaunchDetail/></ChainGuard>}/><Route path="/:cluster/desk/:slug" element={<ChainGuard><BoardDetail/></ChainGuard>}/><Route path="/:cluster/u/:address" element={<ChainGuard><Profile/></ChainGuard>}/><Route path="*" element={<FeedRoute/>}/></Routes></ErrorBoundary></Shell>}
-function FeedRoute(){const navigate=useNavigate();return <Feed onCreate={()=>navigate("/start")}/>}
-function CreateRoute({mode}:{mode:"instant"|"full"}){return <CreateLaunch mode={mode}/>}
+import { Route, Routes, Link } from "react-router-dom";
+import { Shell, ErrorBoundary } from "./components/Shell";
+import { PageHead, Empty } from "./components/primitives";
+import { Launches } from "./pages/Launches";
+import { LaunchDetail } from "./pages/LaunchDetail";
+import { StartIndex, CreateLaunch } from "./pages/Start";
+import { Desks, DeskDetail } from "./pages/Desks";
+import { Portfolio } from "./pages/Portfolio";
+import { Activity } from "./pages/Activity";
+import { Owed } from "./pages/Owed";
+import { Compare } from "./pages/Compare";
+import { Private } from "./pages/Private";
+import { Settings } from "./pages/Settings";
+
+function NotFound() {
+  return (
+    <>
+      <PageHead title="Page not found" copy="This route does not exist." />
+      <Empty>
+        <Link to="/" className="accent-text">
+          Back to launches
+        </Link>
+      </Empty>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <Shell>
+      <ErrorBoundary label="Route">
+        <Routes>
+          <Route path="/" element={<Launches />} />
+          <Route path="/raise/:sale" element={<LaunchDetail />} />
+          <Route path="/start" element={<StartIndex />} />
+          <Route path="/start/:mode" element={<CreateLaunch />} />
+          <Route path="/desks" element={<Desks />} />
+          <Route path="/desk/:slug" element={<DeskDetail />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/owed" element={<Owed />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/private" element={<Private />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
+    </Shell>
+  );
+}

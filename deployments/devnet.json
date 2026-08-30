@@ -3,7 +3,7 @@
     "cluster":  "devnet",
     "genesisHash":  "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
     "sourceCommit":  "5af8fcd103b7ca4dc45ec6485e5bdb685b0966ea",
-    "status":  "canary",
+    "status":  "undeployed",
     "programs":  {
                      "norr_launch":  {
                                          "address":  "BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu",
