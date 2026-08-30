@@ -9,7 +9,12 @@ export function Compare() {
   return (
     <>
       <PageHead
-        title="Compare launches"
+        kicker="§ discover / compare"
+        title={
+          <>
+            Compare <em>launches</em>
+          </>
+        }
         copy="Launch parameters side by side: model, curve configuration, opening price from the exact Q64 arithmetic, and split totals."
       />
       {c.programsDeployed && c.deployedCount === 0 && (

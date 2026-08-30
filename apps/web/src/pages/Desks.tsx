@@ -11,7 +11,12 @@ export function Desks() {
   return (
     <>
       <PageHead
-        title="Community desks"
+        kicker="§ discover / desks"
+        title={
+          <>
+            Community <em>desks</em>
+          </>
+        }
         copy="Curators publish an immutable slug and a minimum revenue share. When a launch attaches, the terms are snapshotted — the desk cannot raise its cut on existing raises."
       />
       {!boardsLive && c.programsDeployed && (
@@ -70,7 +75,7 @@ export function DeskDetail() {
   return (
     <>
       <PageHead
-        kicker={`desk / ${desk.slug}`}
+        kicker={`§ desk / ${desk.slug}`}
         title={desk.name}
         copy={`${desk.description} Minimum share ${desk.minBps / 100}% · ${desk.allowlistOnly ? "approved creators only" : "open to all creators"}.`}
       />

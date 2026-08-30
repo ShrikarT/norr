@@ -10,8 +10,12 @@ export function Private() {
   return (
     <>
       <PageHead
-        kicker="confidential workspace"
-        title="Private contribution"
+        kicker="§ protocol / confidential workspace"
+        title={
+          <>
+            Private <em>contribution</em>
+          </>
+        }
         copy="Contribution amounts are encrypted with Token-2022 confidential transfers: Twisted ElGamal ciphertexts with zero-knowledge equality, validity, and range proofs verified by the native ZK ElGamal proof program."
       />
 

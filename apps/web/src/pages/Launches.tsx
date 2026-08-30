@@ -23,7 +23,12 @@ export function Launches() {
   return (
     <>
       <PageHead
-        title="Launches"
+        kicker="§ discover / launches"
+        title={
+          <>
+            Live <em>launches</em>
+          </>
+        }
         copy="Instant bonding curve markets and sealed raises. Amounts on a sealed raise stay encrypted while it is open; every launch settles into a public, verifiable market."
         action={
           <button className="button button--primary" onClick={() => navigate("/start")}>

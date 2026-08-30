@@ -71,6 +71,7 @@
   /* type */
   --face-data: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --face-ui: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --face-serif: "Instrument Serif", "Times New Roman", Georgia, serif;
   --t-fine: 0.75rem;   /* 12px — tracked uppercase labels, the floor */
   --t-base: 0.9375rem; /* 15px — body and data */
   --t-lead: 2rem;      /* 32px — page leads */

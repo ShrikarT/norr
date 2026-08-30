@@ -18,7 +18,15 @@ export function Settings() {
 
   return (
     <>
-      <PageHead title="Settings" copy="Network verification, program deployment status, and display preferences." />
+      <PageHead
+        kicker="§ protocol / configuration"
+        title={
+          <>
+            Protocol <em>settings</em>
+          </>
+        }
+        copy="Network verification, program deployment status, and display preferences."
+      />
       <div className="stack">
         <Panel title="Network" aside={<Badge kind={c.connected ? "settled" : "loss"}>{c.connected ? "connected" : "unreachable"}</Badge>}>
           <div className="stack">
