@@ -1,0 +1,26 @@
+[package]
+name = "norr-launch"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "norr_launch"
+
+[features]
+default = []
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+
+[dependencies]
+anchor-lang.workspace = true
+anchor-spl.workspace = true
+norr-fees = { path = "../norr-fees", features = ["cpi"] }
+norr-market = { path = "../norr-market", features = ["cpi"] }
+norr-claim = { path = "../norr-claim", features = ["cpi"] }
+norr-boards = { path = "../norr-boards", features = ["cpi"] }

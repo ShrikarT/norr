@@ -1,0 +1,26 @@
+{
+  "name": "norr-fun-solana",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clean-room Solana migration of norr.fun",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "tsx --test packages/sdk/test/*.test.ts packages/tally/test/*.test.ts packages/confidential/test/*.test.ts tests/*.test.ts",
+    "test:sdk": "tsx --test packages/sdk/test/*.test.ts",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --check .",
+    "web": "pnpm --filter @norr/web dev",
+    "verify": "./scripts/verify.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5",
+    "typescript": "~5.8.3"
+  }
+}

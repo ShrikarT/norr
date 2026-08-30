@@ -1,0 +1,28 @@
+{
+  "schema": "norr-p0-v1",
+  "clusterGenesisHash": "REPLACE_AFTER_TARGET_CLUSTER_TEST",
+  "solanaVersion": "REPLACE",
+  "token2022Program": "REPLACE",
+  "zkProofProgram": "REPLACE",
+  "wallets": ["Phantom", "Solflare", "Backpack", "Mobile Wallet Adapter", "named hardware wallet"],
+  "checks": {
+    "configureDepositApplyTransferWithdraw": false,
+    "confidentialMintBurn": false,
+    "auditorEpochRotation": false,
+    "proofContextBinding": false,
+    "pendingCounterRace": false,
+    "salePdaVault": false,
+    "directCreditsClosed": false,
+    "atomicContributionGate": false,
+    "contributionHashChain": false,
+    "wrapperSolvency": false,
+    "normalThresholdCeremony": false,
+    "disasterRefundCeremony": false,
+    "deterministicWalletRecovery": false,
+    "correlationCopyReviewed": false
+  },
+  "measurements": {},
+  "successSettlementSignature": "",
+  "disasterRefundSignature": "",
+  "reviewedBy": []
+}

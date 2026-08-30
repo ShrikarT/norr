@@ -1,0 +1,1 @@
+export { PrivateVault } from "./surfaces";

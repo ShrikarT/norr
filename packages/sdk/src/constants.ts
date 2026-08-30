@@ -1,0 +1,15 @@
+export const BPS_DENOMINATOR = 10_000n;
+export const MIN_TOKEN_RESERVE = 1_000n;
+export const MIN_VIRTUAL_BASE = 1n;
+export const MAX_U64 = (1n << 64n) - 1n;
+export const MAX_RESERVE = 1n << 63n;
+export const Q64 = 1n << 64n;
+export const MAX_FEE_BPS = 1_000;
+export const MAX_SLIPPAGE_BPS = 5_000;
+export const MAX_MERKLE_DEPTH = 20;
+export const TALLY_REVIEW_SECONDS = 86_400;
+export const SETTLEMENT_GRACE_SECONDS = 604_800;
+export const REFUND_REVIEW_SECONDS = 604_800;
+export const MIN_LIQUIDITY_LOCK_SECONDS = 15_552_000;
+export const PROJECT_DECIMALS = 9;
+export const SETTLEMENT_DECIMALS = 6;
