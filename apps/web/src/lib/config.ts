@@ -32,13 +32,13 @@ export const INDEXER_URL = (import.meta.env?.VITE_INDEXER_HTTP as string | undef
 /** Program IDs from program-ids.json / Anchor.toml. Deployment is probed live —
  *  nothing in the UI assumes these exist on the connected cluster. */
 export const PROGRAM_IDS = {
-  launch: "BLGXWzLEVmABKedcTHcYoGGMm5ziG8WL7eRjfDnuMRnu",
-  market: "DWvsf7ZgXBMQy5BXgWkgRWbSwMzZgyeNoQL6kdiMmcMY",
-  fees: "8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY",
-  boards: "67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ",
-  social: "Ae8w5UeyLrfe1RrzZue42hHeL1D7cohXDc1a6GfcPZos",
-  claim: "68AW7FczGrPoeRfYUVeQnu6Aa55HnbgtMhVgRdTCwbSq",
-  wrap: "DxUhL7ncb43VA5neP3gX7pNVAghRv9FMsp1Ntz2T7a5i",
+  launch: "4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8",
+  market: "Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV",
+  fees: "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
+  boards: "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
+  social: "95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw",
+  claim: "4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R",
+  wrap: "9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU",
 } as const;
 
 export type ProgramKey = keyof typeof PROGRAM_IDS;

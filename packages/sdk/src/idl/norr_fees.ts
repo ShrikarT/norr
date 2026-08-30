@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_fees.json`.
  */
 export type NorrFees = {
-  "address": "8oc1FUKYsxmxuNxu5sMQXPQDS7LHPuTcQqHGeGysSRzY",
+  "address": "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
   "metadata": {
     "name": "norrFees",
     "version": "0.1.0",

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_boards.json`.
  */
 export type NorrBoards = {
-  "address": "67mL4D2ukz34urzrygPgTiLkiz7XYdWR4DJ6cYtfv2AJ",
+  "address": "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
   "metadata": {
     "name": "norrBoards",
     "version": "0.1.0",

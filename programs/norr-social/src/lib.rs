@@ -5,7 +5,7 @@
     clippy::needless_range_loop
 )]
 use anchor_lang::prelude::*;
-declare_id!("Ae8w5UeyLrfe1RrzZue42hHeL1D7cohXDc1a6GfcPZos");
+declare_id!("95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw");
 
 #[program]
 pub mod norr_social {

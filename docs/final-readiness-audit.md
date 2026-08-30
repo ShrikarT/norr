@@ -70,3 +70,44 @@ repository and the cluster.
   without `zk-ops`. A locally built Token-2022 with `zk-ops` is a legitimate isolated
   integration target, but it requires the Rust/Agave toolchain which this environment cannot
   host; that work is documented as the next step, not claimed as done.
+
+
+---
+
+## Addendum — 2026-08-30 release-preparation pass (verified live)
+
+1. **Devnet re-probed live during this pass** (`https://api.devnet.solana.com`,
+   genesis `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG`): the previous seven program IDs
+   returned `getAccountInfo = null` (not deployed). All five confidential-transfer evidence
+   accounts (mint `6RBs…9suT`, CT account `HKrZ…RSMm`, three ZK proof contexts) re-confirmed
+   live with the expected owners and sizes.
+2. **All seven programs now compile to deployable SBF binaries.** Built with
+   `cargo-build-sbf` (Agave v4.2.2 platform-tools v1.54) against the committed `Cargo.lock`
+   (`--locked`). Two legitimate build fixes were required and are committed:
+   - restored the workspace `Cargo.toml` (the previous file was an orphaned `[[bin]]` stub,
+     so the Rust workspace did not build at all);
+   - enabled `anchor-lang/init-if-needed`, which `norr-social` account constraints require.
+   No program logic was changed.
+3. **Program IDs now match freshly generated deploy keypairs.** The old declared IDs were
+   vanity addresses with no known keypair, which made deploying to those exact IDs
+   impossible. Every `declare_id!`, `Anchor.toml`, `program-ids.json`, SDK IDL, deployment
+   manifest, and frontend constant was updated to the new keypair-backed IDs
+   (launch `4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8`,
+   claim `4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R`,
+   fees `6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J`,
+   market `Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV`,
+   boards `2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY`,
+   social `95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw`,
+   wrap `9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU`).
+   Manifests still say **undeployed** — deployment itself was blocked in this environment
+   because the Devnet airdrop faucet was rate-limited/dry (429 on every attempt over an
+   hour; ~26 SOL required). `scripts/deploy-programs.sh` performs the deploy verbatim once
+   a funded payer exists; the app's live deployment probe flips features on automatically.
+4. **Web app re-verified end to end in this pass:** all 15 routes render (desktop + mobile,
+   direct navigation), no fatal console errors, no fake-success paths. Fixed: missing
+   browser `Buffer` polyfill (real prod-crash risk on wallet tx paths) and a dev-only
+   host-check escape hatch for tunneled preview environments.
+5. **Full verification suite green:** 22 tests pass, `pnpm -r typecheck` clean,
+   `pnpm -r build` (incl. web production bundle) clean, invariants pass, secret scan passes,
+   `git diff --check` clean. Program keypairs and the deploy payer are gitignored and were
+   generated outside the repository.
