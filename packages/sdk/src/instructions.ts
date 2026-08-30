@@ -1,4 +1,4 @@
-﻿import { concatBytes, u32le, u64le, utf8, addressBytes } from "./bytes.js";
+﻿import { concatBytes, u32le, u64le, u16le, utf8, addressBytes } from "./bytes.js";
 
 export type AccountMeta = Readonly<{
   pubkey: string;
@@ -163,6 +163,106 @@ export function buildFeesReleaseInstruction(
       { pubkey: accounts.routerVault, isSigner: false, isWritable: true },
       { pubkey: accounts.recipientVault, isSigner: false, isWritable: true },
       { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
+    ],
+    data,
+  };
+}
+
+/**
+ * Builds instructions for norr-launch creation.
+ */
+export function buildLaunchCreateInstruction(
+  programId: string,
+  accounts: {
+    creator: string;
+    launch: string;
+    systemProgram: string;
+  },
+  args: {
+    name: string;
+    symbol: string;
+    uri: string;
+    projectMint: string;
+    contributionMint: string;
+    sale: string;
+    router: string;
+    curve: string;
+    model: number;
+    metadataHash: Uint8Array;
+  }
+): Instruction {
+  const nameBytes = utf8(args.name);
+  const symbolBytes = utf8(args.symbol);
+  const uriBytes = utf8(args.uri);
+
+  const data = concatBytes(
+    DISCRIMINATORS.launch.create,
+    addressBytes(args.projectMint),
+    addressBytes(args.contributionMint),
+    addressBytes(args.sale),
+    addressBytes(args.router),
+    addressBytes(args.curve),
+    new Uint8Array([args.model]),
+    args.metadataHash,
+    u32le(nameBytes.length),
+    nameBytes,
+    u32le(symbolBytes.length),
+    symbolBytes,
+    u32le(uriBytes.length),
+    uriBytes
+  );
+
+  return {
+    programId,
+    accounts: [
+      { pubkey: accounts.creator, isSigner: true, isWritable: true },
+      { pubkey: accounts.launch, isSigner: false, isWritable: true },
+      { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+    ],
+    data,
+  };
+}
+
+/**
+ * Builds instructions for norr-boards creation.
+ */
+export function buildBoardCreateInstruction(
+  programId: string,
+  accounts: {
+    owner: string;
+    board: string;
+    systemProgram: string;
+  },
+  args: {
+    slug: string;
+    name: string;
+    uri: string;
+    minBps: number;
+    allowlistOnly: boolean;
+  }
+): Instruction {
+  const slugBytes = utf8(args.slug);
+  const nameBytes = utf8(args.name);
+  const uriBytes = utf8(args.uri);
+
+  const data = concatBytes(
+    DISCRIMINATORS.boards.create,
+    u32le(slugBytes.length),
+    slugBytes,
+    u32le(nameBytes.length),
+    nameBytes,
+    u32le(uriBytes.length),
+    uriBytes,
+    u16le(args.minBps),
+    new Uint8Array([args.allowlistOnly ? 1 : 0])
+  );
+
+  return {
+    programId,
+    accounts: [
+      { pubkey: accounts.owner, isSigner: true, isWritable: true },
+      { pubkey: accounts.board, isSigner: false, isWritable: true },
+      { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     ],
     data,
   };

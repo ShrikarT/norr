@@ -10,6 +10,13 @@ export function concatBytes(...parts: readonly Uint8Array[]): Uint8Array {
 
 export function utf8(value: string): Uint8Array { return new TextEncoder().encode(value); }
 
+export function u16le(value: number): Uint8Array {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffff) throw new RangeError("u16");
+  const out = new Uint8Array(2);
+  new DataView(out.buffer).setUint16(0, value, true);
+  return out;
+}
+
 export function u32le(value: number): Uint8Array {
   if (!Number.isInteger(value) || value < 0 || value > 0xffff_ffff) throw new RangeError("u32");
   const out = new Uint8Array(4);
