@@ -61,9 +61,9 @@
   --cat-partner: #8d8a82;
   --cat-treasury: #d98a2b;
 
-  /* geometry — instruments are nearly square */
-  --r-panel: 2px;
-  --r-control: 2px;
+  /* geometry — soft instrument panels */
+  --r-panel: 10px;
+  --r-control: 8px;
 
   /* motion */
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
