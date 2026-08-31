@@ -1,0 +1,42 @@
+{
+  "step6": {
+    "status": "REAL",
+    "signature": "2KiygxE9dJX2egQcd1DGywYuZysUSbcYVVXSwLwB3fEuN2PQh5ZMwTk8ViRqwATTTFSs3sH8uiNdzAurJKJzTSZ7",
+    "slot": "491011488n",
+    "cu": "14555n",
+    "bytes": 540
+  },
+  "step7": {
+    "status": "REAL",
+    "signature": "2FRor11UqF7twLSacHMRq1SsLk5BmiZY2AG7GvzrQ1HCGsFmnaqF924qQoPhNjNbHDN95etzsWya7S9L5Xh3yvKR",
+    "slot": "491011504n",
+    "cu": "7967n",
+    "bytes": 251,
+    "destPendingBefore": "1n",
+    "destPendingAfter": "0n",
+    "destExpectedCounter": "1n",
+    "destActualCounter": "1n"
+  },
+  "step8": {
+    "status": "REAL",
+    "signature": "2QtR6AN4QKz3st39tpoiQKKqpSzE9dqWkkiniqv22hXiBG1DkeVwaR2MZeu1bgL76N1A7xk2ZwcpoDwPkJWG4iTM",
+    "slot": "491011563n",
+    "cu": "5598n",
+    "bytes": 353,
+    "withdrawAmount": "5000n",
+    "destPublicBalanceAfter": "5000n",
+    "solvencyVerified": true,
+    "solvencyBreakdown": {
+      "totalMinted": "50000n",
+      "sourceConfidential": "40000n",
+      "destConfidential": "5000n",
+      "destPublic": "5000n",
+      "conservationCheck": "40000 + 5000 + 5000 = 50000"
+    }
+  },
+  "accounts": {
+    "mint": "9E2w3wPkKnQHcsrmAEtTCh7XQzUEJ8dmEpyWtzauMW1Z",
+    "source": "3N8KkTcAquDZkMvNu5cPKfJ6b1k6DEVfVEh2j8jT6puY",
+    "destination": "NXuNZjWtnC4xYaHBx4ooPLhfP2vZyrEMewQhJecSxPM"
+  }
+}

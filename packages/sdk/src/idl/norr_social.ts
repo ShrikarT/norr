@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_social.json`.
  */
 export type NorrSocial = {
-  "address": "95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw",
+  "address": "4BNL4GDkUFkCdVZTXo9e3KYRDsD32DXdcrTYJXiucs7g",
   "metadata": {
     "name": "norrSocial",
     "version": "0.1.0",

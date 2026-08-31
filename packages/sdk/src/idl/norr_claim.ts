@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_claim.json`.
  */
 export type NorrClaim = {
-  "address": "4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R",
+  "address": "HzV76HzGKqDuhmc2f5VoMDEF3tqo3GYGbMGbYyRYWitg",
   "metadata": {
     "name": "norrClaim",
     "version": "0.1.0",

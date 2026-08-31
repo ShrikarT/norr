@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_market.json`.
  */
 export type NorrMarket = {
-  "address": "Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV",
+  "address": "3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB",
   "metadata": {
     "name": "norrMarket",
     "version": "0.1.0",

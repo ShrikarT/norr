@@ -6,43 +6,43 @@
   "status": "unverified",
   "programs": {
     "norr_launch": {
-      "address": "4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8",
+      "address": "4orq3YjidamefZgGufp6uSpdgxdxpNeCfdy6spZas2cE",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_claim": {
-      "address": "4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R",
+      "address": "HzV76HzGKqDuhmc2f5VoMDEF3tqo3GYGbMGbYyRYWitg",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_fees": {
-      "address": "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
+      "address": "3VNFr1kkLv1mQkpWQSNBJhDJbpLsELPPF7f5YMWHjMy8",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_market": {
-      "address": "Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV",
+      "address": "3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_boards": {
-      "address": "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
+      "address": "7EtFrHpKzvKYYWYNqimJu8t4UEmDgxTvwyqnGhcuAenB",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_social": {
-      "address": "95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw",
+      "address": "4BNL4GDkUFkCdVZTXo9e3KYRDsD32DXdcrTYJXiucs7g",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false
     },
     "norr_wrap": {
-      "address": "9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU",
+      "address": "6anK695vF91cd3r2iin9AMRQzWCfJL6sugZywdfj9cdV",
       "idlSha256": null,
       "upgradeAuthority": null,
       "verifiedBuild": false

@@ -46,6 +46,26 @@ export type CatalogDesk = Readonly<{
 
 export const SAMPLE_LAUNCHES: readonly CatalogLaunch[] = [
   {
+    id: "norr-genesis",
+    name: "Norr Protocol Token",
+    symbol: "NORR",
+    model: "instant",
+    state: "live",
+    desk: "defi-384473",
+    description:
+      "Official live on-chain token launch on Solana Devnet. Fixed project supply with fee routing and constant-product curve.",
+    supply: "1,000,000,000",
+    curve: {
+      virtualBase: 30_000_000_000n,
+      baseReserve: 0n,
+      tokenReserve: 1_000_000_000_000_000_000n,
+      feeBps: 100,
+    },
+    splits: [
+      { name: "Creator", bps: 10000, role: "creator" },
+    ],
+  },
+  {
     id: "northstar",
     name: "Northstar Compute",
     symbol: "NSTAR",
@@ -107,6 +127,13 @@ export const SAMPLE_LAUNCHES: readonly CatalogLaunch[] = [
 ];
 
 export const SAMPLE_DESKS: readonly CatalogDesk[] = [
+  {
+    slug: "defi-384473",
+    name: "Solana DeFi Desk",
+    minBps: 250,
+    allowlistOnly: false,
+    description: "Live on-chain curation desk created on Solana Devnet (norr-boards). Open allowlist for builders.",
+  },
   {
     slug: "frontier",
     name: "Frontier desk",

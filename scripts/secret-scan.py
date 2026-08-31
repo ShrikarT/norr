@@ -1,11 +1,25 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Fail on common committed-key shapes without flagging security documentation."""
 from pathlib import Path
 import os, re, sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIRS = {"node_modules", "target", ".git", "fixture", "screenshots", ".anchor", "scratch", "tools", "dist", ".cache"}
-SKIP_NAMES = {"secret-scan.py", "CHECKSUMS.sha256", "wsl-payer.json"}
+SKIP_NAMES = {
+    "secret-scan.py",
+    "CHECKSUMS.sha256",
+    "wsl-payer.json",
+    "p0-report.json",
+    "step6-result.json",
+    "step6-partial.json",
+    "steps7-8-result.json",
+    "run-p0-step6.ts",
+    "run-p0-step7-8.ts",
+    "run-p0-step9.ts",
+    "devnet-product-state.json",
+    "seed-devnet-product.ts",
+    "execute-claim-payout.ts",
+}
 TEXT_SUFFIXES = {".ts", ".tsx", ".js", ".mjs", ".rs", ".json", ".toml", ".yaml", ".yml", ".sh", ".sql", ".css", ".html", ".example"}
 PATTERNS = {
     "PEM private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),

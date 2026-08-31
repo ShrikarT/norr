@@ -1,0 +1,31 @@
+{
+  "status": "REAL",
+  "cluster": "https://api.devnet.solana.com",
+  "mint": "DeJCkJcUoZ93QzFvLRt9fKCHMLvAHP7BPCJMRpMVqJyM",
+  "source": "8a4T15PcQrU6sM2AJPXDajFPJ8zszvE26aReFQNCdnHx",
+  "destination": "Gy6ZaWXmPbw8pGHd2UZV25AuSKTnAA4dP2fRhYHqef2b",
+  "equalityContext": "8MWtjRT9BQrMJAu8N5ssngssvPbZkqQUaacwttb3H3dU",
+  "validityContext": "FXCNmNWKS5ZZkL3WKsAKD3PqERfwXt9gFq3oJ9QRRnK8",
+  "rangeContext": "GpZC2XAdzzmAXpW7CqvHyDkQnYaQdNYEbFbvN8YZcHVa",
+  "transferSignature": "4TjUucmo6RruTeMfnZuPW3AbXGpoq2nK2ri3ZsQWNhBR12mRdwx8Kszs3AAkybfN8pYHi81bpYJt9S1FtZQpqHoH",
+  "slot": "490996590n",
+  "bytes": 540,
+  "cu": "14555n",
+  "remainingMatchesHomomorphic": false,
+  "mintCreate": "5JZyiAoYo2xG1aTGKhNgbwL1jWTcQPnNaADKykQ7HPXHPpAUy7k6KqmMD4oyFjRrBbPD26x9gHEv9HiT8pyPipe1",
+  "negative": {
+    "alteredAuditorHi": {
+      "err": {
+        "InstructionError": [
+          "0n",
+          {
+            "Custom": "27n"
+          }
+        ]
+      },
+      "cu": "3579n"
+    }
+  },
+  "destPendingCounter": "1n",
+  "note": "Destination pending is intentionally not applied (Step 7)."
+}

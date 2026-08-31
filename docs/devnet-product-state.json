@@ -1,0 +1,28 @@
+{
+  "board": {
+    "address": "GurRuFuc94GFXHeUSMrx6vtaLDe6BtpSngp3PduMkDW5",
+    "slug": "defi-384473",
+    "tx": "5M9jaPCesoaQH4ZCqTT3KS19doyZR3US3THgvHJNG4ZmYtg1mcNhZjGXi4BM9ZFtHwct4aeXv9qGhSxzMLk7Yf4h"
+  },
+  "social": {
+    "thread": "DYEPVp7yL9EeEEWmnRyivrujXBp22vCNBiNb8utRnkfb",
+    "comment": "zGoqVCnRJZFuzHMiGLiREXqR32mRUXZq62mF743BecY",
+    "profile": "9gbsJPwsyGPGqRbA3krz6dUVorhBZnurNghjv3jH6NpF",
+    "tx": "G8JvtTfYfwBpGXCuxs8WyP4xzv2dPxoWqpnb2ZBX1F1jXq1gJQJGMZ1rtY7vj4uyMjwzHQ7sVmaie1wjnqTTFcr"
+  },
+  "fees": {
+    "router": "fwPLJDmrPGJxnytz2ZUPfYx7NVfyzc5URuaF1UsK7aS",
+    "tx": "5XPvXCoGmmYmVxhRPAjiHQm4Cyv45yQZUj44Nn9vEQ3MbwFuD1NTdvmxcM3owmpSKZ81nYzsCevCLkXj5ioSintu"
+  },
+  "launch": {
+    "address": "CjJ4TzeaBV8XWqWAJSJodjphv1E6ytLJ3vnmCeKUcXoE",
+    "projectMint": "AMTPM2Td9iSTJSRXXp8tt4MCBdRKfw9biWqRPmUrsry4",
+    "tx": "267NK6jYH2C47AJN6JwRRKMAsFdA34sktCmT8GY5uPZTqrjC2W1ugD3zCVZpmKXMFWLcYJHXe2TqEtJuMvqtBM1r"
+  },
+  "claim": {
+    "sale": "3USZayAhEjvJZe87Ru3A1avqVvpA5yiNBdAqpScJywfA",
+    "merkleRoot": "e3ebaf0b4453715ce6275eb19dd764bd6e8e206162208823151c1191f0d47c29",
+    "initTx": "y1JRmUpZUrp1Lizg7NPRpmxBpY3RNzRSAvdKu5ycZLJYVcEDUCswnxpL6iYiCo8475PpgrNtz9yeSUrqFMw5Uw2",
+    "finalizeTx": "3RbwJbgCJKhBvJfxdxXK5EPNsxxLwV2Umkf5qGLtorRAdkXAr9n38dAkY1pVLWtzXWTEpEp8wtK8n4V27PYPHA16"
+  }
+}

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/norr_wrap.json`.
  */
 export type NorrWrap = {
-  "address": "9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU",
+  "address": "6anK695vF91cd3r2iin9AMRQzWCfJL6sugZywdfj9cdV",
   "metadata": {
     "name": "norrWrap",
     "version": "0.1.0",

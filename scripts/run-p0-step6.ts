@@ -14,7 +14,7 @@
 import {
   getInitializeAccountInstruction,
   getReallocateInstructionDataEncoder,
-  getConfigureConfidentialTransferAccountInstruction,
+  getConfigureConfidentialTransferAccountInstructionDataEncoder,
   getEnableConfidentialCreditsInstruction,
   getEnableNonConfidentialCreditsInstruction,
   getInitializeMintInstruction,
@@ -31,10 +31,10 @@ import { ZK_PROOF_INSTRUCTION } from "../packages/confidential/src/proof-ids.ts"
 import { buildConfidentialTransfer } from "../packages/confidential/src/instructions.ts";
 import {
   getVerifyProofInstruction,
-  verifyCiphertextCommitmentEquality,
-  verifyBatchedGroupedCiphertext3HandlesValidity,
-  verifyBatchedRangeProofU128,
+  CIPHERTEXT_COMMITMENT_EQUALITY_CONTEXT_ACCOUNT_SIZE,
+  BATCHED_GROUPED_CIPHERTEXT_3_HANDLES_VALIDITY_CONTEXT_ACCOUNT_SIZE,
   BATCHED_RANGE_PROOF_CONTEXT_ACCOUNT_SIZE,
+  ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS,
 } from "@solana-program/zk-elgamal-proof";
 import { getCreateAccountInstruction } from "@solana-program/system";
 import {
@@ -328,15 +328,21 @@ async function runStep6() {
       discriminator: ZK_PROOF_INSTRUCTION.verifyPubkeyValidity,
       proofData: fromHex(pubkeyProofHex),
     });
-    const configure = getConfigureConfidentialTransferAccountInstruction({
-      token: token.address,
-      mint: mintSigner.address,
-      instructionsSysvarOrContextState: SYSVAR_IX,
-      authority: payer,
+    const configData = getConfigureConfidentialTransferAccountInstructionDataEncoder().encode({
       decryptableZeroBalance: fromHex(decryptableZeroHex),
       maximumPendingBalanceCreditCounter: 65536n,
       proofInstructionOffset: -1,
     });
+    const configure = {
+      programAddress: TOKEN_2022_PROGRAM_ADDRESS,
+      accounts: [
+        { address: token.address, role: 1 },
+        { address: mintSigner.address, role: 0 },
+        { address: SYSVAR_IX, role: 0 },
+        { address: payer.address, role: 2, signer: payer },
+      ],
+      data: configData,
+    };
     const enableC = getEnableConfidentialCreditsInstruction({ token: token.address, authority: payer });
     const enableN = getEnableNonConfidentialCreditsInstruction({ token: token.address, authority: payer });
     await sendTx(rpc, payer, [create, init, realloc, verifyPk, configure, enableC, enableN], label);
@@ -409,37 +415,54 @@ async function runStep6() {
   const valCtx = await generateKeyPairSigner();
   const rangeCtx = await generateKeyPairSigner();
 
-  const eqIxs = await verifyCiphertextCommitmentEquality({
-    rpc, payer,
+  const eqRent = await rpc.getMinimumBalanceForRentExemption(BigInt(CIPHERTEXT_COMMITMENT_EQUALITY_CONTEXT_ACCOUNT_SIZE), { commitment: "confirmed" }).send();
+  const eqCreate = getCreateAccountInstruction({
+    payer,
+    newAccount: eqCtx,
+    lamports: eqRent,
+    space: CIPHERTEXT_COMMITMENT_EQUALITY_CONTEXT_ACCOUNT_SIZE,
+    programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS),
+  });
+  const eqVerify = getVerifyProofInstruction({
+    discriminator: 3,
     proofData: fromHex(proofs.equality_proof_hex),
-    contextState: { contextAccount: eqCtx, authority: payer.address },
-  });
-  await sendTx(rpc, payer, eqIxs, "eq-context");
+    contextState: eqCtx.address,
+    contextStateAuthority: payer.address,
+  }, { programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS) });
+  await sendTx(rpc, payer, [eqCreate, eqVerify], "eq-context");
 
-  const valIxs = await verifyBatchedGroupedCiphertext3HandlesValidity({
-    rpc, payer,
+  const valRent = await rpc.getMinimumBalanceForRentExemption(BigInt(BATCHED_GROUPED_CIPHERTEXT_3_HANDLES_VALIDITY_CONTEXT_ACCOUNT_SIZE), { commitment: "confirmed" }).send();
+  const valCreate = getCreateAccountInstruction({
+    payer,
+    newAccount: valCtx,
+    lamports: valRent,
+    space: BATCHED_GROUPED_CIPHERTEXT_3_HANDLES_VALIDITY_CONTEXT_ACCOUNT_SIZE,
+    programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS),
+  });
+  const valVerify = getVerifyProofInstruction({
+    discriminator: 12,
     proofData: fromHex(proofs.validity_proof_hex),
-    contextState: { contextAccount: valCtx, authority: payer.address },
-  });
-  await sendTx(rpc, payer, valIxs, "val-context");
+    contextState: valCtx.address,
+    contextStateAuthority: payer.address,
+  }, { programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS) });
+  await sendTx(rpc, payer, [valCreate, valVerify], "val-context");
 
-  const rangeIxs = await verifyBatchedRangeProofU128({
-    rpc, payer,
-    proofData: fromHex(proofs.range_proof_hex),
-    contextState: { contextAccount: rangeCtx, authority: payer.address },
+  const rangeRent = await rpc.getMinimumBalanceForRentExemption(BigInt(BATCHED_RANGE_PROOF_CONTEXT_ACCOUNT_SIZE), { commitment: "confirmed" }).send();
+  const rangeCreate = getCreateAccountInstruction({
+    payer,
+    newAccount: rangeCtx,
+    lamports: rangeRent,
+    space: BATCHED_RANGE_PROOF_CONTEXT_ACCOUNT_SIZE,
+    programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS),
   });
-  const rangeBytesGuess = proofs.range_proof_hex.length / 2;
-  if (rangeIxs.length > 1) {
-    await sendTx(rpc, payer, [rangeIxs[0]], "range-create");
-    await sendTx(rpc, payer, rangeIxs.slice(1), "range-verify");
-  } else {
-    try {
-      await sendTx(rpc, payer, rangeIxs, "range-context");
-    } catch (e) {
-      console.log("range combined failed, splitting. context size", BATCHED_RANGE_PROOF_CONTEXT_ACCOUNT_SIZE, rangeBytesGuess);
-      throw e;
-    }
-  }
+  const rangeVerify = getVerifyProofInstruction({
+    discriminator: 7,
+    proofData: fromHex(proofs.range_proof_hex),
+    contextState: rangeCtx.address,
+    contextStateAuthority: payer.address,
+  }, { programAddress: address(ZK_ELGAMAL_PROOF_PROGRAM_ADDRESS) });
+  await sendTx(rpc, payer, [rangeCreate], "range-create");
+  await sendTx(rpc, payer, [rangeVerify], "range-verify");
 
   console.log("\n=== TRANSFER (offset 0, context accounts) ===");
   const ixTransfer = buildConfidentialTransfer({
