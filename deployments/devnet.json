@@ -1,64 +1,75 @@
-﻿{
-    "schema":  1,
-    "cluster":  "devnet",
-    "genesisHash":  "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
-    "sourceCommit":  "5af8fcd103b7ca4dc45ec6485e5bdb685b0966ea",
-    "status":  "undeployed",
-    "programs":  {
-                     "norr_launch":  {
-                                         "address":  "4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8",
-                                         "idlSha256":  null,
-                                         "upgradeAuthority":  null,
-                                         "verifiedBuild":  false
-                                     },
-                     "norr_claim":  {
-                                        "address":  "4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R",
-                                        "idlSha256":  null,
-                                        "upgradeAuthority":  null,
-                                        "verifiedBuild":  false
-                                    },
-                     "norr_fees":  {
-                                       "address":  "6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J",
-                                       "idlSha256":  null,
-                                       "upgradeAuthority":  null,
-                                       "verifiedBuild":  false
-                                   },
-                     "norr_market":  {
-                                         "address":  "Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV",
-                                         "idlSha256":  null,
-                                         "upgradeAuthority":  null,
-                                         "verifiedBuild":  false
-                                     },
-                     "norr_boards":  {
-                                         "address":  "2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY",
-                                         "idlSha256":  null,
-                                         "upgradeAuthority":  null,
-                                         "verifiedBuild":  false
-                                     },
-                     "norr_social":  {
-                                         "address":  "95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw",
-                                         "idlSha256":  null,
-                                         "upgradeAuthority":  null,
-                                         "verifiedBuild":  false
-                                     },
-                     "norr_wrap":  {
-                                       "address":  "9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU",
-                                       "idlSha256":  null,
-                                       "upgradeAuthority":  null,
-                                       "verifiedBuild":  false
-                                   }
-                 },
-    "mints":  {
-                  "projectDecimals":  9,
-                  "settlementDecimals":  6,
-                  "settlementMint":  null,
-                  "confidentialMint":  "6RBs6aoEpQZ59aKfpqWE2SnAX3cysBo3whFuhBoe9suT"
-              },
-    "external":  {
-                     "dammV2Program":  "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG",
-                     "dammV2Config":  null
-                 },
-    "auditorEpochs":  [
-
-                      ]
+{
+  "schema": 1,
+  "cluster": "devnet",
+  "genesisHash": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "sourceCommit": "62f032b19fd81b36bd1bb93a3f6dffd33f6636c7",
+  "status": "verified",
+  "programs": {
+    "norr_launch": {
+      "address": "4orq3YjidamefZgGufp6uSpdgxdxpNeCfdy6spZas2cE",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491042546,
+      "verifiedBuild": true
+    },
+    "norr_claim": {
+      "address": "HzV76HzGKqDuhmc2f5VoMDEF3tqo3GYGbMGbYyRYWitg",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491042655,
+      "verifiedBuild": true
+    },
+    "norr_fees": {
+      "address": "3VNFr1kkLv1mQkpWQSNBJhDJbpLsELPPF7f5YMWHjMy8",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491042754,
+      "verifiedBuild": true
+    },
+    "norr_market": {
+      "address": "3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491042864,
+      "verifiedBuild": true
+    },
+    "norr_boards": {
+      "address": "7EtFrHpKzvKYYWYNqimJu8t4UEmDgxTvwyqnGhcuAenB",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491042908,
+      "verifiedBuild": true
+    },
+    "norr_social": {
+      "address": "4BNL4GDkUFkCdVZTXo9e3KYRDsD32DXdcrTYJXiucs7g",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491043022,
+      "verifiedBuild": true
+    },
+    "norr_wrap": {
+      "address": "6anK695vF91cd3r2iin9AMRQzWCfJL6sugZywdfj9cdV",
+      "idlSha256": null,
+      "upgradeAuthority": "FWvsL5EBeQCSDHsTT5mmaohTGrdVZq88jY6uzASUKAfV",
+      "deploymentSlot": 491043126,
+      "verifiedBuild": true
+    }
+  },
+  "mints": {
+    "projectDecimals": 9,
+    "settlementDecimals": 6,
+    "settlementMint": null,
+    "confidentialMint": "9E2w3wPkKnQHcsrmAEtTCh7XQzUEJ8dmEpyWtzauMW1Z"
+  },
+  "external": {
+    "dammV2Program": "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG",
+    "dammV2Config": null
+  },
+  "auditorEpochs": [
+    {
+      "epoch": 0,
+      "publicKey": "FbcHANHTBJKZ153AwhNYD2ZWihFHT2hiYWdiiiHFoyxq",
+      "startsAtSlot": "491011344"
+    }
+  ]
 }

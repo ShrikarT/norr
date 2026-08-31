@@ -24,12 +24,14 @@ use solana_zk_sdk::encryption::{
 };
 use solana_zk_sdk::zk_elgamal_proof_program::{
     build_batched_grouped_ciphertext_3_handles_validity_proof_data,
-    build_batched_range_proof_u128_data, build_ciphertext_commitment_equality_proof_data,
+    build_batched_range_proof_u128_data, build_batched_range_proof_u64_data,
+    build_ciphertext_commitment_equality_proof_data,
     build_pubkey_validity_proof_data, VerifyZkProof,
 };
 
 #[derive(Deserialize, Default)]
 struct Input {
+    mode: Option<String>,
     source_seed_hex: Option<String>,
     dest_seed_hex: Option<String>,
     auditor_seed_hex: Option<String>,
@@ -38,9 +40,15 @@ struct Input {
     auditor_pubkey_hex: Option<String>,
     source_ae_key_hex: Option<String>,
     available_balance: u64,
+    #[serde(default)]
     transfer_amount: u64,
+    #[serde(default)]
+    withdraw_amount: u64,
+    /// 32-byte hex of PedersenOpening scalar.
+    opening_hex: Option<String>,
     /// 64-byte hex of the source account's on-chain `available_balance`.
-    /// When set, remaining ciphertext is `available - lo - 2^16·hi`.
+    /// When set, remaining ciphertext is `available - lo - 2^16·hi` (transfer)
+    /// or `available - withdraw` (withdraw).
     available_ciphertext_hex: Option<String>,
     emit_secrets: Option<bool>,
 }
@@ -53,28 +61,41 @@ struct Secrets {
     source_ae_key_hex: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Default)]
 struct Output {
+    #[serde(skip_serializing_if = "String::is_empty")]
     source_elgamal_pubkey_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     dest_elgamal_pubkey_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     auditor_elgamal_pubkey_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    transfer_opening_hex: String,
     decryptable_remaining_hex: String,
     decryptable_zero_hex: String,
     decryptable_available_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     auditor_ciphertext_lo_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     auditor_ciphertext_hi_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     source_ciphertext_lo_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     source_ciphertext_hi_hex: String,
     remaining_ciphertext_hex: String,
     remaining_commitment_hex: String,
     remaining_matches_homomorphic: bool,
     equality_proof_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     validity_proof_hex: String,
     range_proof_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     source_pubkey_proof_hex: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     dest_pubkey_proof_hex: String,
     remaining_amount: u64,
     transfer_amount: u64,
+    withdraw_amount: u64,
     available_balance: u64,
     secrets: Option<Secrets>,
 }
@@ -273,6 +294,7 @@ fn generate(input: Input) -> Result<Output> {
         decryptable_available_hex: hex::encode(ae.encrypt(input.available_balance).to_bytes()),
         auditor_ciphertext_lo_hex: hex::encode(auditor_lo.to_bytes()),
         auditor_ciphertext_hi_hex: hex::encode(auditor_hi.to_bytes()),
+        transfer_opening_hex: hex::encode(open_transfer.to_bytes()),
         source_ciphertext_lo_hex: hex::encode(ct_lo_src.to_bytes()),
         source_ciphertext_hi_hex: hex::encode(ct_hi_src.to_bytes()),
         remaining_ciphertext_hex: hex::encode(ct_remaining.to_bytes()),
@@ -292,6 +314,7 @@ fn generate(input: Input) -> Result<Output> {
             auditor_elgamal_secret_hex: auditor_kp.map(|k| hex::encode(k.secret().as_bytes())),
             source_ae_key_hex: hex::encode(ae_bytes),
         }),
+        ..Output::default()
     };
 
     eprintln!(
@@ -302,6 +325,96 @@ fn generate(input: Input) -> Result<Output> {
         out.validity_proof_hex.len() / 2,
         out.range_proof_hex.len() / 2,
         remaining_matches_homomorphic
+    );
+
+    Ok(out)
+}
+
+fn generate_withdraw(input: Input) -> Result<Output> {
+    anyhow::ensure!(
+        input.withdraw_amount <= input.available_balance,
+        "withdraw exceeds available"
+    );
+
+    let src = keypair_from_secret_or_seed(&input.source_secret_hex, &input.source_seed_hex)?;
+    let ae = ae_from_hex(&input.source_ae_key_hex)?;
+
+    let remaining = input.available_balance - input.withdraw_amount;
+    let open_remaining = if let Some(h) = &input.opening_hex {
+        let bytes = decode_hex("opening", h)?;
+        anyhow::ensure!(bytes.len() == 32, "opening must be 32 bytes");
+        let mut arr = [0u8; 32];
+        arr.copy_from_slice(&bytes);
+        let scalar = Option::from(Scalar::from_canonical_bytes(arr))
+            .ok_or_else(|| anyhow::anyhow!("opening is not canonical scalar"))?;
+        PedersenOpening::new(scalar)
+    } else {
+        PedersenOpening::new_rand()
+    };
+
+    let ct_remaining = if let Some(h) = &input.available_ciphertext_hex {
+        let bytes = decode_hex("available ciphertext", h)?;
+        let available_ct = ElGamalCiphertext::from_bytes(&bytes)
+            .ok_or_else(|| anyhow::anyhow!("available ciphertext is not a valid ElGamal point"))?;
+        let sub_ct = src.pubkey().encrypt_with_u64(input.withdraw_amount, &PedersenOpening::default());
+        &available_ct - &sub_ct
+    } else {
+        src.pubkey().encrypt_with_u64(remaining, &open_remaining)
+    };
+
+    let commit_remaining = Pedersen::with(remaining, &open_remaining);
+
+    let eq = build_ciphertext_commitment_equality_proof_data(
+        &src,
+        &ct_remaining,
+        &commit_remaining,
+        &open_remaining,
+        remaining,
+    )?;
+    eq.verify_proof()
+        .map_err(|e| anyhow::anyhow!("withdraw equality proof self-verify failed: {e:?}"))?;
+
+    let range_u64 = build_batched_range_proof_u64_data(
+        vec![&commit_remaining],
+        vec![remaining],
+        vec![64],
+        vec![&open_remaining],
+    )?;
+    range_u64
+        .verify_proof()
+        .map_err(|e| anyhow::anyhow!("withdraw range proof self-verify failed: {e:?}"))?;
+
+    let emit = input.emit_secrets.unwrap_or(true);
+    let ae_bytes: [u8; 16] = (&ae).into();
+
+    let out = Output {
+        source_elgamal_pubkey_hex: hex::encode(src.pubkey().to_bytes()),
+        decryptable_remaining_hex: hex::encode(ae.encrypt(remaining).to_bytes()),
+        decryptable_zero_hex: hex::encode(ae.encrypt(0).to_bytes()),
+        decryptable_available_hex: hex::encode(ae.encrypt(input.available_balance).to_bytes()),
+        remaining_ciphertext_hex: hex::encode(ct_remaining.to_bytes()),
+        remaining_commitment_hex: hex::encode(commit_remaining.to_bytes()),
+        remaining_matches_homomorphic: true,
+        equality_proof_hex: hex::encode(bytes_of(&eq)),
+        range_proof_hex: hex::encode(bytes_of(&range_u64)),
+        remaining_amount: remaining,
+        withdraw_amount: input.withdraw_amount,
+        available_balance: input.available_balance,
+        secrets: emit.then(|| Secrets {
+            source_elgamal_secret_hex: hex::encode(src.secret().as_bytes()),
+            dest_elgamal_secret_hex: None,
+            auditor_elgamal_secret_hex: None,
+            source_ae_key_hex: hex::encode(ae_bytes),
+        }),
+        ..Output::default()
+    };
+
+    eprintln!(
+        "ct-proof-gen (withdraw): remaining={} withdraw={} eq={} range={}",
+        remaining,
+        input.withdraw_amount,
+        out.equality_proof_hex.len() / 2,
+        out.range_proof_hex.len() / 2
     );
 
     Ok(out)
@@ -319,7 +432,11 @@ fn main() -> Result<()> {
     } else {
         serde_json::from_str(&stdin)?
     };
-    let out = generate(input)?;
+    let out = if input.mode.as_deref() == Some("withdraw") {
+        generate_withdraw(input)?
+    } else {
+        generate(input)?
+    };
     println!("{}", serde_json::to_string_pretty(&out)?);
     Ok(())
 }

@@ -5,7 +5,7 @@
     clippy::needless_range_loop
 )]
 use anchor_lang::prelude::*;
-declare_id!("Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV");
+declare_id!("3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB");
 const DENOMINATOR: u128 = 10_000;
 const MIN_TOKEN_RESERVE: u64 = 1_000;
 const MAX_RESERVE: u64 = 1u64 << 63;

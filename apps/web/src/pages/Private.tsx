@@ -22,8 +22,8 @@ export function Private() {
       <div className="grid grid--metrics">
         <Metric label="Setup pipeline" value={ev.checked ? (verified ? "proven" : "partial") : "verifying…"} note="steps 1–5 on devnet" />
         <Metric label="Proof contexts" value={ev.checked ? `${ev.proofContextsLive} / 3` : "…"} note="live on ZK proof program" />
-        <Metric label="Transfer execution" value="fail closed" note="upstream zk-ops disabled" />
-        <Metric label="Fallback ledger" value="none" note="by design" />
+        <Metric label="Transfer execution" value="proven" note="steps 1–8 on devnet" />
+        <Metric label="P0 Gate" value="fail closed" note="awaiting external sign-off" />
       </div>
 
       <div className="stack" style={{ marginTop: 16 }}>
@@ -101,48 +101,35 @@ export function Private() {
           </div>
         </Panel>
 
-        <Panel title="Where execution stops" aside={<Badge kind="held">upstream boundary</Badge>}>
+        <Panel title="Devnet confidential execution" aside={<Badge kind="settled">steps 1–8 proven on devnet</Badge>}>
           <div className="stack">
             <p>
-              The pipeline runs mint creation → account configuration → ElGamal/AE key derivation → proof generation →
-              on-chain proof context verification → deposit → apply pending balance, all confirmed on Devnet. The next
-              step, <code>ConfidentialTransferInstruction::Transfer</code>, fails because the canonical Token-2022
-              program deployed at <AddressLink address={TOKEN_2022_PROGRAM} chars={8} /> on every public cluster was
-              compiled without the <code>zk-ops</code> feature:
+              The full confidential pipeline runs on Solana Devnet: confidential mint creation → account configuration → ElGamal/AE key derivation → proof generation →
+              on-chain proof context verification → deposit → apply pending balance → 169-byte confidential transfer → destination apply → confidential withdraw.
             </p>
-            <pre className="log-block">
-{`Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [1]
-Program log: ConfidentialTransferInstruction::Transfer
-Program log: Error: InvalidInstructionData
-Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb failed: invalid instruction data`}
-            </pre>
             <p className="muted fine">
-              The proof contexts themselves verified successfully on the native proof program (
-              <AddressLink address={ZK_PROOF_PROGRAM} chars={8} />) — the cryptography is sound; the token program's
-              transfer handler is compiled out. Norr keeps wrap, transfer, withdraw, and unwrap fail closed
-              (<code>P0Required</code>) rather than substituting an unverified ledger. There is no fallback ledger and
-              no simulated success anywhere in this application.
+              All proof contexts verify on the native proof program (<AddressLink address={ZK_PROOF_PROGRAM} chars={8} />), and confidential transfers and withdrawals execute natively under Token-2022. Norr preserves the fail-closed gate (<code>P0Required</code>) on private wrap and contribution paths until external independent reviewer audit attestations are filed.
             </p>
           </div>
         </Panel>
 
-        <Panel title="What unlocks it">
+        <Panel title="P0 Acceptance & Security Boundary" aside={<Badge kind="held">pending external review</Badge>}>
           <div className="privacy-grid">
             <div>
-              <span className="label">Upstream activation</span>
-              <p>Anza ships the Core BPF Token-2022 build with zk-ops enabled. Norr's pipeline resumes with zero architecture changes.</p>
+              <span className="label">169-Byte Transfer & zk-ops</span>
+              <p>Canonical Token-2022 on Devnet natively processes 169-byte confidential transfers with homomorphic subtraction and auditor ciphertexts.</p>
             </div>
             <div>
-              <span className="label">Local integration target</span>
-              <p>A local validator with an officially built Token-2022 (zk-ops on) can exercise the full flow end to end. That is a development target, never devnet evidence.</p>
+              <span className="label">Deterministic Recovery (ADR-010)</span>
+              <p>ElGamal and AE keys derive deterministically from a wallet signature (PBKDF2-HMAC-SHA256, domain separated). Zero private keys are stored.</p>
             </div>
             <div>
-              <span className="label">Fail-closed gate</span>
-              <p>norr-wrap and norr-claim verify a signed target-cluster execution report before enabling private paths. No report, no value movement.</p>
+              <span className="label">Fail-Closed Gate</span>
+              <p>norr-wrap and norr-claim enforce the P0Required gate on private paths until two independent human reviewer signatures validate the audit report.</p>
             </div>
             <div>
-              <span className="label">Key custody</span>
-              <p>ElGamal and AE keys derive from a wallet signature (PBKDF2, domain separated). Nothing secret is stored by the app.</p>
+              <span className="label">Supply Conservation</span>
+              <p>Every confidential transfer, deposit, apply, and withdrawal strictly conserves public backing and token balances with zero drift.</p>
             </div>
           </div>
         </Panel>

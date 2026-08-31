@@ -1,4 +1,4 @@
-﻿import { pbkdf2Sync } from "crypto";
+import { pbkdf2Sync } from "crypto";
 import { AeKey, ElGamalKeypair } from "@solana/zk-sdk";
 
 export function deriveConfidentialKeys(
@@ -14,7 +14,7 @@ export function deriveConfidentialKeys(
   const derivedSeed = pbkdf2Sync(signMessageOutput, contextBuffer, 100000, 32, "sha256");
   
   const elGamal = ElGamalKeypair.fromSeed(derivedSeed);
-  const aeKey = AeKey.fromBytes(derivedSeed);
+  const aeKey = AeKey.fromBytes(derivedSeed.subarray(0, 16));
   
   return { elGamal, aeKey };
 }

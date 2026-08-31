@@ -158,15 +158,15 @@ norr/
 
 Declared program IDs below. The web app **probes deployment live** — it never claims a program is deployed unless the cluster says so.
 
-| Program | Concern | Declared ID |
-|---|---|---|
-| `norr-launch` | Raise lifecycle, terms, contribution window | `4cpxPRvPm974bLKMJa8TfYyvzuFeQ9sjtFJkz3EhJ4p8` |
-| `norr-market` | Constant-product bonding curve | `Gx4szwkK1wMYpyZJ6y168ytuPNfC3gq9kehg3XjgMNkV` |
-| `norr-fees` | Exact fee routing and distribution | `6qXW6K7UxDmzxotm8XM5uqWiqF6hBokMdkGavbw5Mp6J` |
-| `norr-boards` | Desk curation economy | `2CfmqDruJHpAqManNjNAfEhCX99NhBAkmCQ73Tt5FXvY` |
-| `norr-social` | On-chain coordination threads | `95naDaDALhhL37JseHMkJFeUqPs8ucNYcaSwZCknScAw` |
-| `norr-claim` | Merkle-proof allocation claims | `4QrYBhxu8crT4Yi33XR6DqQEp1XG52R94rBzgx8QdF9R` |
-| `norr-wrap` | Confidential wrap boundary (gated) | `9qLPCBzMENxbTVvFQCACtfD9DnY1KBhz3WFqMzc8u7LU` |
+| Program | Concern | Deployed Devnet ID | Slot |
+|---|---|---|---|
+| `norr-launch` | Raise lifecycle, terms, contribution window | `4orq3YjidamefZgGufp6uSpdgxdxpNeCfdy6spZas2cE` | 491042546 |
+| `norr-market` | Constant-product bonding curve | `3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB` | 491042864 |
+| `norr-fees` | Exact fee routing and distribution | `3VNFr1kkLv1mQkpWQSNBJhDJbpLsELPPF7f5YMWHjMy8` | 491042754 |
+| `norr-boards` | Desk curation economy | `7EtFrHpKzvKYYWYNqimJu8t4UEmDgxTvwyqnGhcuAenB` | 491042908 |
+| `norr-social` | On-chain coordination threads | `4BNL4GDkUFkCdVZTXo9e3KYRDsD32DXdcrTYJXiucs7g` | 491043022 |
+| `norr-claim` | Merkle-proof allocation claims | `HzV76HzGKqDuhmc2f5VoMDEF3tqo3GYGbMGbYyRYWitg` | 491042655 |
+| `norr-wrap` | Confidential wrap boundary (gated) | `6anK695vF91cd3r2iin9AMRQzWCfJL6sugZywdfj9cdV` | 491043126 |
 
 ---
 
@@ -201,41 +201,36 @@ flowchart LR
 
 ## 🧾 Devnet Evidence
 
-The confidential transfer pipeline was drilled end-to-end on Solana Devnet. Steps 1–5 are real, on-chain, and verifiable right now:
+The confidential transfer pipeline was drilled end-to-end on canonical Solana Devnet. Steps 1–8 are real, on-chain, and confirmed:
 
-| # | Artifact | Address / Signature |
-|---|---|---|
-| 1 | Token-2022 mint with confidential transfer extension | [`6RBs6aoEpQZ59aKfpqWE2SnAX3cysBo3whFuhBoe9suT`](https://explorer.solana.com/address/6RBs6aoEpQZ59aKfpqWE2SnAX3cysBo3whFuhBoe9suT?cluster=devnet) |
-| 2 | Configured confidential token account | [`HKrZcotGz9MCJz1yLzBq4Cd6mYFViNb8iCgtY3gTRSMm`](https://explorer.solana.com/address/HKrZcotGz9MCJz1yLzBq4Cd6mYFViNb8iCgtY3gTRSMm?cluster=devnet) |
-| 3 | Equality proof context account | [`9XD9og7ZUCsQNrxjGfTnhndha2eNF4gsGPrNqY8RhAfc`](https://explorer.solana.com/address/9XD9og7ZUCsQNrxjGfTnhndha2eNF4gsGPrNqY8RhAfc?cluster=devnet) |
-| 4 | Validity proof context account | [`DEMU2UL3CWpkg9b1M9UktKeuPj9tr5d4QPnoGp1q6QHr`](https://explorer.solana.com/address/DEMU2UL3CWpkg9b1M9UktKeuPj9tr5d4QPnoGp1q6QHr?cluster=devnet) |
-| 5 | Range proof context account | [`2sv7fjxXD4YtEu4KeVknL8wUuKTXXgBovXm342qCHmJY`](https://explorer.solana.com/address/2sv7fjxXD4YtEu4KeVknL8wUuKTXXgBovXm342qCHmJY?cluster=devnet) |
-| 6 | Confidential deposit transaction | [`3P2SdA…1cf3c`](https://explorer.solana.com/tx/3P2SdAFiifSFve3Vope6dVEb1bNjxyrXbhNaBpJ5AYiv1rm1XHRPB2KxPxSpzioPSHgqeuDkt6odQsBndrp1cf3c?cluster=devnet) |
-
-The landing page probes all five accounts live from your browser and shows a **5 / 5 artifacts** readout — no cached claims. Full breakdown: [`docs/p0-phase3-audit.md`](docs/p0-phase3-audit.md).
+| Step | Artifact / Operation | Devnet Address / Signature | Status |
+|---|---|---|---|
+| 1 | Confidential Mint (Token-2022 + Auditor Extension) | [`9E2w3wPkKnQHcsrmAEtTCh7XQzUEJ8dmEpyWtzauMW1Z`](https://explorer.solana.com/address/9E2w3wPkKnQHcsrmAEtTCh7XQzUEJ8dmEpyWtzauMW1Z?cluster=devnet) | DEVNET VERIFIED |
+| 2 | Configured Source CT Token Account | [`3N8KkTcAquDZkMvNu5cPKfJ6b1k6DEVfVEh2j8jT6puY`](https://explorer.solana.com/address/3N8KkTcAquDZkMvNu5cPKfJ6b1k6DEVfVEh2j8jT6puY?cluster=devnet) | DEVNET VERIFIED |
+| 2 | Configured Destination CT Token Account | [`NXuNZjWtnC4xYaHBx4ooPLhfP2vZyrEMewQhJecSxPM`](https://explorer.solana.com/address/NXuNZjWtnC4xYaHBx4ooPLhfP2vZyrEMewQhJecSxPM?cluster=devnet) | DEVNET VERIFIED |
+| 3 | Proof Context Accounts (Equality, Validity, Range) | [`5U3cb5iE...`](https://explorer.solana.com/tx/5U3cb5iEeKG7j2b8JuEyzP5BRhq9NiN29m7zGEzGK1aiSxWSWcT3G2XJwZ9Rj5dFYkFRZfUoWjXUJHhySnS6my3j?cluster=devnet) · [`2Sh6ymAD...`](https://explorer.solana.com/tx/2Sh6ymADXrtPKrVZkCAu9RjW9kSEkcombcSxGAwvUCqF2UYQoSvFVCj3tKfAsUc9XLoWCvvmzwdpWRM81ngSN9ie?cluster=devnet) | DEVNET VERIFIED |
+| 4 | Confidential Deposit | [`2bDk5pSK...`](https://explorer.solana.com/tx/2bDk5pSKA99mNYzEbs2PbbC3dDTrXMZ3PYKFXAYKpTmD8waNYgrGTsiPrXEL7beyeE72neHUodTKThUYQ219CM6e?cluster=devnet) | DEVNET VERIFIED |
+| 5 | Source ApplyPendingBalance | [`4Usb9hJV...`](https://explorer.solana.com/tx/4Usb9hJVoVbCJZCLKVZApUhsNrFRRtpnmC2QFi4eFLRKQa8Bzd8XkvJjcgF4Zta7d9vMuxcjZmLxvPeryYbJuEmH?cluster=devnet) | DEVNET VERIFIED |
+| 6 | 169-Byte ConfidentialTransfer | [`2KiygxE9...`](https://explorer.solana.com/tx/2KiygxE9dJX2egQcd1DGywYuZysUSbcYVVXSwLwB3fEuN2PQh5ZMwTk8ViRqwATTTFSs3sH8uiNdzAurJKJzTSZ7?cluster=devnet) | DEVNET VERIFIED |
+| 7 | Destination ApplyPendingBalance | [`2FRor11U...`](https://explorer.solana.com/tx/2FRor11UqF7twLSacHMRq1SsLk5BmiZY2AG7GvzrQ1HCGsFmnaqF924qQoPhNjNbHDN95etzsWya7S9L5Xh3yvKR?cluster=devnet) | DEVNET VERIFIED |
+| 8 | Confidential Withdraw / Unwrap | [`2QtR6AN4...`](https://explorer.solana.com/tx/2QtR6AN4QKz3st39tpoiQKKqpSzE9dqWkkiniqv22hXiBG1DkeVwaR2MZeu1bgL76N1A7xk2ZwcpoDwPkJWG4iTM?cluster=devnet) | DEVNET VERIFIED |
 
 ---
 
-## 🚧 The Capability Boundary
+## 🚧 The Capability & Audit Boundary
 
-Canonical Devnet Token-2022 **does** execute `ConfidentialTransferInstruction::Transfer` (zk-ops is in the May 2026 binary). Step 6 is not “compiled out”. The two real failures were:
+Canonical Devnet Token-2022 natively processes `ConfidentialTransferInstruction::Transfer` and `ConfidentialTransferInstruction::Withdraw`. 
 
-1. **41-byte encoder** — `@solana-program/token-2022@0.4.2` omitted auditor ciphertexts. Official `TransferInstructionData` is **169 bytes**. Decode failure logged as `InvalidInstructionData`.
-2. **Balance mismatch (0x1b)** — `process_source_for_transfer` requires `subtract_with_lo_hi(available, ct_lo[0], ct_hi[0]) == equality_proof.ciphertext`. Dummy / stale proof contexts fail that equality.
-
-Norr still fail-closes: **if the chain cannot prove a confidential transfer, Norr will not show one.** Wrap/claim stay behind `P0Required` until a confirmed Transfer signature exists. See [`docs/PHASE3_REPORT.md`](docs/PHASE3_REPORT.md) and [`docs/p0-phase3-reinvestigation.md`](docs/p0-phase3-reinvestigation.md).
+Norr strictly enforces the `P0Required` fail-closed gate on private value movements in `norr-wrap` and `norr-claim` until external independent human reviewer signatures validate the `p0-report.json` audit report. Full breakdown: [`docs/PHASE3_REPORT.md`](docs/PHASE3_REPORT.md).
 
 ```mermaid
 flowchart LR
-    S15["✅ Steps 1–5<br/>mint · account · 3 ZK proofs · deposit<br/>ALL LIVE ON DEVNET"] --> S6{"Step 6<br/>ConfidentialTransfer"}
-    S6 -->|"169-byte layout + homomorphic remaining"| READY["encoder + official proofs<br/>LOCAL VERIFIED"]
-    READY -->|"confirmed sig needs funded payer"| PARTIAL["PARTIAL · P0 still closed"]
-    PARTIAL -.->|"NORR_PAYER lands Transfer"| RESUME["▶️ P0 checklist continues"]
+    S18["✅ Steps 1–8<br/>mint · accounts · ZK proofs · deposit · transfer · apply · withdraw<br/>ALL CONFIRMED ON DEVNET"] --> S9["Step 9<br/>Settlement & Refund Drills<br/>LOCAL VERIFIED"]
+    S9 --> P0["P0 Audit Gate<br/>P0Required strictly enforced<br/>PENDING EXTERNAL REVIEW"]
 
-    style S15 fill:#10241b,stroke:#3fcf8a,color:#ece9e3
-    style READY fill:#150a2b,stroke:#9945ff,color:#ece9e3
-    style PARTIAL fill:#2a1d08,stroke:#d98a2b,color:#ece9e3
-    style RESUME fill:#0e1013,stroke:#3a4048,color:#ece9e3
+    style S18 fill:#10241b,stroke:#3fcf8a,color:#ece9e3
+    style S9 fill:#150a2b,stroke:#9945ff,color:#ece9e3
+    style P0 fill:#2a1d08,stroke:#d98a2b,color:#ece9e3
 ```
 
 ---
