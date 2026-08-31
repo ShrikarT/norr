@@ -218,22 +218,25 @@ The landing page probes all five accounts live from your browser and shows a **5
 
 ## 🚧 The Capability Boundary
 
-One step of the confidential pipeline is blocked upstream, and Norr says so instead of faking it:
+Canonical Devnet Token-2022 **does** execute `ConfidentialTransferInstruction::Transfer` (zk-ops is in the May 2026 binary). Step 6 is not “compiled out”. The two real failures were:
+
+1. **41-byte encoder** — `@solana-program/token-2022@0.4.2` omitted auditor ciphertexts. Official `TransferInstructionData` is **169 bytes**. Decode failure logged as `InvalidInstructionData`.
+2. **Balance mismatch (0x1b)** — `process_source_for_transfer` requires `subtract_with_lo_hi(available, ct_lo[0], ct_hi[0]) == equality_proof.ciphertext`. Dummy / stale proof contexts fail that equality.
+
+Norr still fail-closes: **if the chain cannot prove a confidential transfer, Norr will not show one.** Wrap/claim stay behind `P0Required` until a confirmed Transfer signature exists. See [`docs/PHASE3_REPORT.md`](docs/PHASE3_REPORT.md) and [`docs/p0-phase3-reinvestigation.md`](docs/p0-phase3-reinvestigation.md).
 
 ```mermaid
 flowchart LR
-    S15["✅ Steps 1–5<br/>mint · account · 3 ZK proofs · deposit<br/>ALL LIVE ON DEVNET"] --> S6{"Step 6<br/>ApplyPendingBalance"}
-    S6 -->|"canonical Token-2022 deployed<br/>WITHOUT zk-ops feature"| ERR["❌ InvalidInstructionData<br/>(real cluster error)"]
-    ERR --> FC["🔒 FAIL CLOSED<br/>P0Required gate refuses to proceed<br/>app shows the real error log"]
-    FC -.->|"upstream ships zk-ops"| RESUME["▶️ Pipeline resumes<br/>zero architecture changes"]
+    S15["✅ Steps 1–5<br/>mint · account · 3 ZK proofs · deposit<br/>ALL LIVE ON DEVNET"] --> S6{"Step 6<br/>ConfidentialTransfer"}
+    S6 -->|"169-byte layout + homomorphic remaining"| READY["encoder + official proofs<br/>LOCAL VERIFIED"]
+    READY -->|"confirmed sig needs funded payer"| PARTIAL["PARTIAL · P0 still closed"]
+    PARTIAL -.->|"NORR_PAYER lands Transfer"| RESUME["▶️ P0 checklist continues"]
 
     style S15 fill:#10241b,stroke:#3fcf8a,color:#ece9e3
-    style ERR fill:#2b1215,stroke:#e84142,color:#ece9e3
-    style FC fill:#150a2b,stroke:#9945ff,color:#ece9e3
+    style READY fill:#150a2b,stroke:#9945ff,color:#ece9e3
+    style PARTIAL fill:#2a1d08,stroke:#d98a2b,color:#ece9e3
     style RESUME fill:#0e1013,stroke:#3a4048,color:#ece9e3
 ```
-
-The canonical Token-2022 program on Devnet (`TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`) is compiled without the `zk-ops` feature, so `ApplyPendingBalance` returns `InvalidInstructionData`. Norr's response is a hard-coded honesty rule: **if the chain cannot prove it, Norr will not show it.** Every dependent path is gated behind `P0Required` and surfaces the actual error. Full runtime log and dependency analysis: [`docs/p0-phase3-blocked.md`](docs/p0-phase3-blocked.md).
 
 ---
 
@@ -296,20 +299,20 @@ What [`norr-demo.mp4`](norr-demo.mp4) shows, in order:
 2. **Launch feed** — curve state, progress, and pricing computed from on-chain-exact math.
 3. **Quote** — integer-exact buy/sell quoting with fee breakdown.
 4. **Merkle verify** — settlement root recomputed in the browser and matched.
-5. **`/private`** — the five live Devnet artifacts, then the honestly gated Step 6 with the real `InvalidInstructionData` log.
+5. **`/private`** — the five live Devnet artifacts, then the honestly gated Step 6 (169-byte layout, balance-mismatch equality, P0 still closed).
 
 ---
 
 ## 🗺 Roadmap
 
 1. **Deploy the seven Anchor programs** to Devnet with verified builds and published IDLs.
-2. **Resume the confidential pipeline** the moment upstream Token-2022 ships with `zk-ops` enabled — zero architecture changes required.
+2. **Land a confirmed ConfidentialTransfer** with `NORR_PAYER` + `scripts/run-p0-step6.ts` — zero architecture changes.
 3. **Complete P0 acceptance drills** on the target cluster and unlock the `P0Required` paths.
 4. **Market maturity** — locked-liquidity graduation, indexer-backed history, desk curation economy.
 5. **Immutability handover** for `norr-claim`, `norr-fees`, `norr-market`, and `norr-wrap` before uncapped mainnet value.
 
 ---
 
-**Docs:** [`docs/p0-phase3-audit.md`](docs/p0-phase3-audit.md) · [`docs/p0-phase3-blocked.md`](docs/p0-phase3-blocked.md) · [`docs/confidential-transfers.md`](docs/confidential-transfers.md) · [`docs/indexing.md`](docs/indexing.md) · [`DEPLOYMENT.md`](DEPLOYMENT.md)
+**Docs:** [`docs/PHASE3_REPORT.md`](docs/PHASE3_REPORT.md) · [`docs/p0-phase3-reinvestigation.md`](docs/p0-phase3-reinvestigation.md) · [`docs/p0-phase3-audit.md`](docs/p0-phase3-audit.md) · [`docs/confidential-transfers.md`](docs/confidential-transfers.md) · [`DEPLOYMENT.md`](DEPLOYMENT.md)
 
 *Norr currently targets Solana Devnet. Nothing here is financial advice, and no mainnet deployment exists yet.*

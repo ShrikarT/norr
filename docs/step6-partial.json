@@ -1,0 +1,10 @@
+{
+  "status": "PARTIAL",
+  "reason": "no funded payer",
+  "encoderBytes": 169,
+  "equalityProofBytes": 320,
+  "validityProofBytes": 544,
+  "rangeProofBytes": 1000,
+  "remainingMatchesHomomorphic": true,
+  "balanceMismatchEquality": "subtract_with_lo_hi(available, ct_lo[0], ct_hi[0]) == equality.ciphertext"
+}
