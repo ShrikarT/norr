@@ -1,4 +1,6 @@
-﻿# P0 Phase 3 Audit: Token-2022 Confidential Transfer Execution Status
+> **Correction (2026-08-31):** The “zk-ops compiled out” conclusion below is **wrong** for the current Devnet Token-2022 binary. `InvalidInstructionData` was a 41-byte encode failure; the 169-byte layout enters `process_transfer` and then hits `Balance mismatch` (0x1b). See [`p0-phase3-reinvestigation.md`](p0-phase3-reinvestigation.md) and [`PHASE3_REPORT.md`](PHASE3_REPORT.md). This file is kept as the historical audit.
+
+# P0 Phase 3 Audit: Token-2022 Confidential Transfer Execution Status
 
 ## Executive Status
 
