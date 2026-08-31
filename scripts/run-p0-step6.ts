@@ -84,3 +84,94 @@ function toHex(u: Uint8Array): string {
 function fromHex(h: string): Uint8Array {
   return Uint8Array.from(Buffer.from(h, "hex"));
 }
+
+type ProofOut = {
+  source_elgamal_pubkey_hex: string;
+  dest_elgamal_pubkey_hex: string;
+  auditor_elgamal_pubkey_hex: string;
+  decryptable_remaining_hex: string;
+  decryptable_zero_hex: string;
+  decryptable_available_hex: string;
+  auditor_ciphertext_lo_hex: string;
+  auditor_ciphertext_hi_hex: string;
+  remaining_ciphertext_hex: string;
+  remaining_matches_homomorphic: boolean;
+  equality_proof_hex: string;
+  validity_proof_hex: string;
+  range_proof_hex: string;
+  source_pubkey_proof_hex: string;
+  dest_pubkey_proof_hex: string;
+  remaining_amount: number;
+  transfer_amount: number;
+  available_balance: number;
+  secrets?: {
+    source_elgamal_secret_hex: string;
+    dest_elgamal_secret_hex?: string | null;
+    source_ae_key_hex: string;
+  };
+};
+
+function runOfficialProofGen(input: Record<string, unknown>): ProofOut {
+  const bin = resolve(repoRoot, "tools/ct-proof-gen/target/release/ct-proof-gen");
+  if (!existsSync(bin)) {
+    throw new Error("tools/ct-proof-gen is not built. cargo build --release in tools/ct-proof-gen");
+  }
+  const r = spawnSync(bin, {
+    input: JSON.stringify(input),
+    encoding: "utf8",
+  });
+  if (r.status !== 0) {
+    throw new Error(`ct-proof-gen failed: ${r.stderr || r.stdout}`);
+  }
+  const jsonStart = r.stdout.indexOf("{");
+  return JSON.parse(r.stdout.slice(jsonStart));
+}
+
+async function waitConfirm(rpc: any, sig: string) {
+  for (let i = 0; i < 40; i++) {
+    try {
+      const statuses = await rpc.getSignatureStatuses([sig]).send();
+      const stat = statuses.value[0];
+      if (stat && (stat.confirmationStatus === "confirmed" || stat.confirmationStatus === "finalized")) {
+        return { slot: stat.slot, status: stat.confirmationStatus };
+      }
+    } catch { /* transient */ }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  throw new Error(`Confirmation timed out for ${sig}`);
+}
+
+async function sendTx(rpc: any, payer: any, ixs: any[], name: string, opts?: { allowFail?: boolean }) {
+  let latestBlockhash: any;
+  while (true) {
+    try {
+      latestBlockhash = (await rpc.getLatestBlockhash({ commitment: "confirmed" }).send()).value;
+      break;
+    } catch {
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+  let msg = createTransactionMessage({ version: 0 });
+  msg = setTransactionMessageFeePayerSigner(payer, msg);
+  msg = setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, msg);
+  msg = appendTransactionMessageInstructions(ixs, msg);
+  const signedTx = await signTransactionMessageWithSigners(msg);
+  const wire = getBase64EncodedWireTransaction(signedTx);
+  const bytes = Buffer.from(wire, "base64").length;
+
+  const sim = await rpc.simulateTransaction(wire, { commitment: "confirmed", encoding: "base64" }).send();
+  const logs = sim.value.logs ?? [];
+  console.log(`[${name}] sim CU=${sim.value.unitsConsumed} bytes=${bytes} err=${safeJson(sim.value.err)}`);
+  if (sim.value.err) {
+    console.log(`[${name}] logs:`, logs.slice(-8).join("\n"));
+    if (!opts?.allowFail) throw new Error(`Simulation failed for ${name}: ${safeJson(sim.value.err)}`);
+    return { sig: null, slot: null, bytes, cu: sim.value.unitsConsumed, logs, err: sim.value.err };
+  }
+  if (bytes > 1232) throw new Error(`transaction ${name} is ${bytes} bytes > 1232`);
+  const start = Date.now();
+  const sig = await rpc.sendTransaction(wire, { encoding: "base64", skipPreflight: true }).send();
+  const conf = await waitConfirm(rpc, sig);
+  const latency = Date.now() - start;
+  console.log(`[${name}] confirmed slot=${conf.slot} ${conf.status} ${latency}ms sig=${sig}`);
+  return { sig, slot: conf.slot, bytes, cu: sim.value.unitsConsumed, latency, logs, err: null };
+}
