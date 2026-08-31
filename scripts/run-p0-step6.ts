@@ -49,6 +49,7 @@ import { readFileSync, existsSync, writeFileSync, mkdirSync } from "fs";
 import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
+import { safeJson } from "./safe-json.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -160,10 +161,10 @@ async function sendTx(rpc: any, payer: any, ixs: any[], name: string, opts?: { a
 
   const sim = await rpc.simulateTransaction(wire, { commitment: "confirmed", encoding: "base64" }).send();
   const logs = sim.value.logs ?? [];
-  console.log(`[${name}] sim CU=${sim.value.unitsConsumed} bytes=${bytes} err=${JSON.stringify(sim.value.err)}`);
+  console.log(`[${name}] sim CU=${sim.value.unitsConsumed} bytes=${bytes} err=${safeJson(sim.value.err)}`);
   if (sim.value.err) {
     console.log(`[${name}] logs:`, logs.slice(-8).join("\n"));
-    if (!opts?.allowFail) throw new Error(`Simulation failed for ${name}: ${JSON.stringify(sim.value.err)}`);
+    if (!opts?.allowFail) throw new Error(`Simulation failed for ${name}: ${safeJson(sim.value.err)}`);
     return { sig: null, slot: null, bytes, cu: sim.value.unitsConsumed, logs, err: sim.value.err };
   }
   if (bytes > 1232) throw new Error(`transaction ${name} is ${bytes} bytes > 1232`);
@@ -497,7 +498,7 @@ async function runStep6() {
     note: "Destination pending is intentionally not applied (Step 7).",
   };
   mkdirSync(resolve(repoRoot, "docs"), { recursive: true });
-  writeFileSync(resolve(repoRoot, "docs/step6-result.json"), JSON.stringify(report, null, 2));
+  writeFileSync(resolve(repoRoot, "docs/step6-result.json"), safeJson(report, 2));
   console.log("\nSTEP 6", report.status, report.transferSignature);
   return report;
 }
