@@ -1,17 +1,16 @@
-﻿import type { Address, TransactionSigner } from "@solana/kit";
+import type { Address, TransactionSigner } from "@solana/kit";
 import {
   getInitializeConfidentialTransferMintInstruction,
-  getConfigureConfidentialTransferAccountInstruction,
   getConfidentialDepositInstruction,
   getApplyConfidentialPendingBalanceInstruction,
-  getConfidentialTransferInstruction,
-  getConfidentialWithdrawInstruction,
-  getEmptyConfidentialTransferAccountInstruction,
   getEnableConfidentialCreditsInstruction,
-  getDisableConfidentialCreditsInstruction,
-  getEnableNonConfidentialCreditsInstruction,
-  getDisableNonConfidentialCreditsInstruction
 } from "@solana-program/token-2022";
+import { TOKEN_2022_PROGRAM_ID } from "./cluster.js";
+import {
+  encodeConfidentialTransferInstructionData,
+} from "./transfer-data.js";
+
+export { encodeConfidentialTransferInstructionData } from "./transfer-data.js";
 
 export function buildInitializeConfidentialTransferMint(
   mint: Address,
@@ -51,30 +50,63 @@ export function buildApplyConfidentialPendingBalance(
   return getApplyConfidentialPendingBalanceInstruction({
     token,
     authority,
-    expectedPendingBalanceCreditCounter, newDecryptableAvailableBalance: new Uint8Array(36),
+    expectedPendingBalanceCreditCounter,
+    newDecryptableAvailableBalance: new Uint8Array(36),
   });
 }
 
-export function buildConfidentialTransfer(
-  sourceToken: Address,
-  mint: Address,
-  destinationToken: Address,
-  authority: Address | TransactionSigner,
-  newSourceDecryptableAvailableBalance: Uint8Array,
-  equalityProofOffset: number,
-  ciphertextValidityProofOffset: number,
-  rangeProofOffset: number,
-  instructionsSysvar?: Address
-) {
-  return getConfidentialTransferInstruction({
-    sourceToken,
-    mint,
-    destinationToken,
-    authority,
-    newSourceDecryptableAvailableBalance,
-    equalityProofInstructionOffset: equalityProofOffset,
-    ciphertextValidityProofInstructionOffset: ciphertextValidityProofOffset,
-    rangeProofInstructionOffset: rangeProofOffset,
-    instructionsSysvar: instructionsSysvar ?? undefined,
-  } as any);
+/**
+ * Confidential Transfer instruction using the official 169-byte layout
+ * (includes auditor ElGamal ciphertexts lo/hi).
+ *
+ * Proof offsets of 0 mean "use the following proof-context accounts".
+ */
+export function buildConfidentialTransfer(args: {
+  sourceToken: Address;
+  mint: Address;
+  destinationToken: Address;
+  authority: Address | TransactionSigner;
+  newSourceDecryptableAvailableBalance: Uint8Array;
+  transferAmountAuditorCiphertextLo: Uint8Array;
+  transferAmountAuditorCiphertextHi: Uint8Array;
+  equalityProofContext: Address;
+  ciphertextValidityProofContext: Address;
+  rangeProofContext: Address;
+  equalityProofOffset?: number;
+  ciphertextValidityProofOffset?: number;
+  rangeProofOffset?: number;
+}) {
+  const data = encodeConfidentialTransferInstructionData({
+    newSourceDecryptableAvailableBalance: args.newSourceDecryptableAvailableBalance,
+    transferAmountAuditorCiphertextLo: args.transferAmountAuditorCiphertextLo,
+    transferAmountAuditorCiphertextHi: args.transferAmountAuditorCiphertextHi,
+    equalityProofInstructionOffset: args.equalityProofOffset ?? 0,
+    ciphertextValidityProofInstructionOffset: args.ciphertextValidityProofOffset ?? 0,
+    rangeProofInstructionOffset: args.rangeProofOffset ?? 0,
+  });
+
+  const authorityAddress =
+    typeof args.authority === "string"
+      ? args.authority
+      : ((args.authority as TransactionSigner).address as Address);
+
+  return {
+    programAddress: TOKEN_2022_PROGRAM_ID,
+    accounts: [
+      { address: args.sourceToken, role: 1 },
+      { address: args.mint, role: 0 },
+      { address: args.destinationToken, role: 1 },
+      { address: args.equalityProofContext, role: 0 },
+      { address: args.ciphertextValidityProofContext, role: 0 },
+      { address: args.rangeProofContext, role: 0 },
+      {
+        address: authorityAddress,
+        role: 2,
+        ...(typeof args.authority === "object" ? { signer: args.authority } : {}),
+      },
+    ],
+    data,
+  };
 }
+
+export { getEnableConfidentialCreditsInstruction };
