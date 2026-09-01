@@ -162,11 +162,9 @@ pnpm -r typecheck
 
 ## Documentation
 
-For in-depth protocol specifications, cryptographic audits, and deployment guides, visit the documentation:
+For in-depth protocol specifications, cryptographic audits, and architecture details, visit the documentation:
 
-- [**Product Specification**](PRODUCT.md) — Comprehensive product mechanics, user personas, bonding curves, and sealed raises.
 - [**System Architecture**](docs/architecture.md) — Program specifications, state machines, CPI flows, and PDA derivations.
-- [**Deployment Guide**](DEPLOYMENT.md) — Operator instructions for deploying programs to Devnet/Mainnet and hosting the frontend.
 - [**Confidential Transfers**](docs/confidential-transfers.md) — ZK ElGamal cryptography, Twisted ElGamal proofs, and Token-2022 extensions.
 - [**Devnet Audit Evidence**](docs/audit-evidence.md) — Confirmed on-chain transaction signatures, accounts, and cryptographic proof verification logs.
 - [**Final Release Audit**](docs/final-release-audit.md) — Subsystem status matrix and verification records.
