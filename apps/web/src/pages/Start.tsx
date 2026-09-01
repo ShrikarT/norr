@@ -3,9 +3,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { quoteBuy, DISCRIMINATORS, type OnchainLaunch } from "@norr/sdk";
+import { quoteBuy, DISCRIMINATORS, buildMarketInitializeInstruction, buildMarketActivateInstruction, type OnchainLaunch } from "@norr/sdk";
 import { useCluster } from "../lib/status";
-import { useTx } from "../lib/tx";
+import { useTx, toWeb3Instruction } from "../lib/tx";
 import { cacheCreatedLaunch } from "../lib/onchain";
 import { PROGRAM_IDS, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
@@ -143,7 +143,56 @@ export function CreateLaunch() {
       ]),
     });
 
-    const sig = await run(c.connection, wallet, [ix]);
+    const instructions: TransactionInstruction[] = [ix];
+
+    if (mode === "instant") {
+      const baseMint = new PublicKey("Ez3fzpwBkpBN69b7tnB6KeqLF84E5yvTA6neCaoeUnQ9");
+      const ATA_PROGRAM = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+      const LEGACY_TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+      const tokenVault = PublicKey.findProgramAddressSync(
+        [curvePda.toBuffer(), new PublicKey(LEGACY_TOKEN_PROGRAM).toBuffer(), projectMintKeypair.publicKey.toBuffer()],
+        new PublicKey(ATA_PROGRAM)
+      )[0];
+      const baseVault = PublicKey.findProgramAddressSync(
+        [curvePda.toBuffer(), new PublicKey(LEGACY_TOKEN_PROGRAM).toBuffer(), baseMint.toBuffer()],
+        new PublicKey(ATA_PROGRAM)
+      )[0];
+
+      const vb = BigInt(Math.floor(Number(virtualBase || "30000") * 1e6));
+      const tr = BigInt(supply || "1000000000") * 1_000_000_000n;
+
+      const marketInitIx = buildMarketInitializeInstruction(
+        PROGRAM_IDS.market,
+        {
+          payer: wallet.publicKey.toBase58(),
+          launch: launchPda.toBase58(),
+          curve: curvePda.toBase58(),
+        },
+        {
+          projectMint: projectMintKeypair.publicKey.toBase58(),
+          baseMint: baseMint.toBase58(),
+          tokenVault: tokenVault.toBase58(),
+          baseVault: baseVault.toBase58(),
+          router: routerPda.toBase58(),
+          liquidityBeneficiary: wallet.publicKey.toBase58(),
+          virtualBase: vb > 0n ? vb : 30_000_000_000n,
+          tokenReserve: tr > 0n ? tr : 1_000_000_000_000_000_000n,
+          graduationTarget: 100_000_000_000n,
+          feeBps: 100,
+          maxBuyFirstSlots: 100n,
+          liquidityUnlockAt: BigInt(Math.floor(Date.now() / 1000) + 15_552_000),
+        }
+      );
+
+      const marketActivateIx = buildMarketActivateInstruction(
+        PROGRAM_IDS.market,
+        { curve: curvePda.toBase58() }
+      );
+
+      instructions.push(toWeb3Instruction(marketInitIx), toWeb3Instruction(marketActivateIx));
+    }
+
+    const sig = await run(c.connection, wallet, instructions);
     if (sig) {
       const newLaunch: OnchainLaunch = {
         address: launchPda.toBase58(),

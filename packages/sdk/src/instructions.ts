@@ -85,13 +85,13 @@ export function buildMarketBuyInstruction(
     router: string;
     tokenProgram: string;
   },
-  minTokensOut: bigint,
-  maxBaseIn: bigint
+  baseIn: bigint,
+  minTokensOut: bigint
 ): Instruction {
   const data = concatBytes(
     DISCRIMINATORS.market.buy,
-    u64le(minTokensOut),
-    u64le(maxBaseIn)
+    u64le(baseIn),
+    u64le(minTokensOut)
   );
 
   return {
@@ -108,6 +108,72 @@ export function buildMarketBuyInstruction(
       { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     ],
     data,
+  };
+}
+
+export function buildMarketInitializeInstruction(
+  programId: string,
+  accounts: {
+    payer: string;
+    launch: string;
+    curve: string;
+    systemProgram?: string;
+  },
+  args: {
+    projectMint: string;
+    baseMint: string;
+    tokenVault: string;
+    baseVault: string;
+    router: string;
+    liquidityBeneficiary: string;
+    virtualBase: bigint;
+    tokenReserve: bigint;
+    graduationTarget: bigint;
+    feeBps: number;
+    maxBuyFirstSlots: bigint;
+    liquidityUnlockAt: bigint;
+  }
+): Instruction {
+  const data = concatBytes(
+    DISCRIMINATORS.market.initialize,
+    addressBytes(args.projectMint),
+    addressBytes(args.baseMint),
+    addressBytes(args.tokenVault),
+    addressBytes(args.baseVault),
+    addressBytes(args.router),
+    addressBytes(args.liquidityBeneficiary),
+    u64le(args.virtualBase),
+    u64le(args.tokenReserve),
+    u64le(args.graduationTarget),
+    u16le(args.feeBps),
+    u64le(args.maxBuyFirstSlots),
+    u64le(args.liquidityUnlockAt)
+  );
+
+  return {
+    programId,
+    accounts: [
+      { pubkey: accounts.payer, isSigner: true, isWritable: true },
+      { pubkey: accounts.launch, isSigner: false, isWritable: false },
+      { pubkey: accounts.curve, isSigner: false, isWritable: true },
+      { pubkey: accounts.systemProgram ?? "11111111111111111111111111111111", isSigner: false, isWritable: false },
+    ],
+    data,
+  };
+}
+
+export function buildMarketActivateInstruction(
+  programId: string,
+  accounts: {
+    curve: string;
+  }
+): Instruction {
+  return {
+    programId,
+    accounts: [
+      { pubkey: accounts.curve, isSigner: false, isWritable: true },
+    ],
+    data: DISCRIMINATORS.market.activate,
   };
 }
 
