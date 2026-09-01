@@ -6,15 +6,15 @@ const rpc = createRpc({
   transport: createDefaultRpcTransport({ url: RPC_URL }),
 });
 
-const programs: Record<string, string> = {
-  norr_launch: "Hh8FAARfcY4e9MJSMVpfv4eae8aeA94a4gyHRJhrtkcr",
-  norr_claim: "GL8hxTuRfXZQMZfvS4RNoT8D1EVKSUpQTLZKsQq9oJaE",
-  norr_fees: "4aou9742wef3vMVnZdSUs66G9GvDDJUrmvTHTKLBx2jk",
-  norr_market: "D8PSneY6UbBgj5tv5FNxa7FoEzHPwobvdcoAXBphPqTY",
-  norr_boards: "48Fz4Shqtu9MZBXuAKc1rwm4wQsxcRdkzMtQiW7vdcm2",
-  norr_social: "E2yvUMyHW1WvqLGA9DNNeEk44b1toJDwk1RoseEYham8",
-  norr_wrap: "BjF6Y5RUpD3KufxV4VPeS6thYnQNt6Cas6hfQXdqf6Rn",
-};
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(here, "..");
+const programs: Record<string, string> = JSON.parse(
+  readFileSync(resolve(repoRoot, "program-ids.json"), "utf8")
+);
 
 async function main() {
   console.log("Checking 7 Norr programs on Devnet (" + RPC_URL + ")...");

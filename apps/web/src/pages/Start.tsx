@@ -2,10 +2,13 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import { sha256 } from "@noble/hashes/sha2.js";
 import { quoteBuy } from "@norr/sdk";
 import { useCluster } from "../lib/status";
+import { useTx } from "../lib/tx";
 import { PROGRAM_IDS, short } from "../lib/config";
-import { Badge, Callout, CapabilityGate, Metric, PageHead, Panel } from "../components/primitives";
+import { Badge, Callout, CapabilityGate, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 
 export function StartIndex() {
   const cards = [
@@ -53,11 +56,22 @@ export function StartIndex() {
   );
 }
 
+function getAnchorDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(new TextEncoder().encode(`global:${name}`)).subarray(0, 8));
+}
+
+function u32le(n: number): Buffer {
+  const b = Buffer.alloc(4);
+  b.writeUInt32LE(n, 0);
+  return b;
+}
+
 export function CreateLaunch() {
   const { mode: modeParam } = useParams();
   const mode: "instant" | "raise" = modeParam === "raise" ? "raise" : "instant";
   const wallet = useWallet();
   const c = useCluster();
+  const { state, run, reset } = useTx();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [supply, setSupply] = useState("1000000000");
@@ -83,6 +97,56 @@ export function CreateLaunch() {
       return null;
     }
   }, [virtualBase, supply]);
+
+  const handleCreate = async () => {
+    if (!wallet.publicKey) return;
+    reset();
+    const projectMintKeypair = Keypair.generate();
+    const [launchPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("launch"), projectMintKeypair.publicKey.toBuffer()],
+      new PublicKey(PROGRAM_IDS.launch)
+    );
+    const [salePda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("sale"), launchPda.toBuffer()],
+      new PublicKey(PROGRAM_IDS.claim)
+    );
+    const [routerPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("router"), launchPda.toBuffer()],
+      new PublicKey(PROGRAM_IDS.fees)
+    );
+    const [curvePda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("curve"), projectMintKeypair.publicKey.toBuffer()],
+      new PublicKey(PROGRAM_IDS.market)
+    );
+
+    const nameBytes = Buffer.from(name.trim(), "utf8");
+    const symBytes = Buffer.from(symbol.trim(), "utf8");
+    const uriBytes = Buffer.from("https://norr.io/token.json", "utf8");
+
+    const ix = new TransactionInstruction({
+      programId: new PublicKey(PROGRAM_IDS.launch),
+      keys: [
+        { pubkey: wallet.publicKey, isSigner: true, isWritable: true },
+        { pubkey: launchPda, isSigner: false, isWritable: true },
+        { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
+      ],
+      data: Buffer.concat([
+        getAnchorDiscriminator("create"),
+        projectMintKeypair.publicKey.toBuffer(),
+        wallet.publicKey.toBuffer(),
+        salePda.toBuffer(),
+        routerPda.toBuffer(),
+        curvePda.toBuffer(),
+        Buffer.from([mode === "instant" ? 0 : 1]),
+        Buffer.alloc(32),
+        u32le(nameBytes.length), nameBytes,
+        u32le(symBytes.length), symBytes,
+        u32le(uriBytes.length), uriBytes,
+      ]),
+    });
+
+    await run(c.connection, wallet, [ix]);
+  };
 
   return (
     <>
@@ -169,10 +233,15 @@ export function CreateLaunch() {
         ) : !wallet.connected ? (
           <WalletMultiButton className="wallet-button" />
         ) : (
-          <button className="button button--primary" disabled={!nameValid || !symbolValid || !supplyValid || !splitsValid}>
+          <button
+            className="button button--primary"
+            disabled={!nameValid || !symbolValid || !supplyValid || !splitsValid || state.stage === "simulating" || state.stage === "awaiting-signature" || state.stage === "sent"}
+            onClick={handleCreate}
+          >
             Review and sign
           </button>
         )}
+        <TxStatus state={state} />
       </div>
     </>
   );

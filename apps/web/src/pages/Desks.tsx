@@ -1,13 +1,83 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
+import { sha256 } from "@noble/hashes/sha2.js";
 import { useCluster } from "../lib/status";
+import { useTx } from "../lib/tx";
 import { SAMPLE_DESKS, SAMPLE_LAUNCHES } from "../lib/catalog";
 import { PROGRAM_IDS, short } from "../lib/config";
-import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel } from "../components/primitives";
+import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 import { LaunchCard } from "./Launches";
 
+function getAnchorDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(new TextEncoder().encode(`global:${name}`)).subarray(0, 8));
+}
+
+function u16le(n: number): Buffer {
+  const b = Buffer.alloc(2);
+  b.writeUInt16LE(n, 0);
+  return b;
+}
+
+function u32le(n: number): Buffer {
+  const b = Buffer.alloc(4);
+  b.writeUInt32LE(n, 0);
+  return b;
+}
+
 export function Desks() {
+  const wallet = useWallet();
   const c = useCluster();
+  const { state, run, reset } = useTx();
+  const [slug, setSlug] = useState("");
+  const [name, setName] = useState("");
+  const [minBps, setMinBps] = useState(250);
+  const [allowlistOnly, setAllowlistOnly] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+
   const boardsLive = c.programsDeployed?.boards === true;
+  const slugValid = /^[a-z0-9-]{3,32}$/.test(slug.trim());
+  const nameValid = name.trim().length >= 3 && name.trim().length <= 48;
+  const minBpsValid = minBps > 0 && minBps <= 5000;
+
+  const handleCreateDesk = async () => {
+    if (!wallet.publicKey || !slugValid || !nameValid || !minBpsValid) return;
+    reset();
+    const cleanSlug = slug.trim().toLowerCase();
+    const cleanName = name.trim();
+    const cleanUri = `https://norr.io/desk/${cleanSlug}`;
+
+    const [deskPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("board"), Buffer.from(cleanSlug, "utf8")],
+      new PublicKey(PROGRAM_IDS.boards)
+    );
+
+    const slugBytes = Buffer.from(cleanSlug, "utf8");
+    const nameBytes = Buffer.from(cleanName, "utf8");
+    const uriBytes = Buffer.from(cleanUri, "utf8");
+
+    const ix = new TransactionInstruction({
+      programId: new PublicKey(PROGRAM_IDS.boards),
+      keys: [
+        { pubkey: wallet.publicKey, isSigner: true, isWritable: true },
+        { pubkey: deskPda, isSigner: false, isWritable: true },
+        { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
+      ],
+      data: Buffer.concat([
+        getAnchorDiscriminator("create_board"),
+        u32le(slugBytes.length), slugBytes,
+        u32le(nameBytes.length), nameBytes,
+        u32le(uriBytes.length), uriBytes,
+        u16le(minBps),
+        Buffer.from([allowlistOnly ? 1 : 0]),
+      ]),
+    });
+
+    await run(c.connection, wallet, [ix]);
+  };
+
   return (
     <>
       <PageHead
@@ -44,11 +114,56 @@ export function Desks() {
         ))}
       </div>
       <div style={{ marginTop: 16 }}>
-        {!boardsLive && (
+        {!boardsLive ? (
           <CapabilityGate
             title="Open a desk"
             reason="Desk creation submits create_board to norr-boards. It enables automatically when the program is executable on the connected cluster."
           />
+        ) : !showCreate ? (
+          <button className="button button--secondary" onClick={() => setShowCreate(true)}>
+            + Open a new curation desk
+          </button>
+        ) : (
+          <Panel title="Configure curation desk" aside={<button className="button button--ghost" onClick={() => setShowCreate(false)}>Cancel</button>}>
+            <div className="stack">
+              <div className="grid grid--2">
+                <label className="field">
+                  <span className="label">Desk Slug (unique ID)</span>
+                  <input value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} placeholder="e.g. ai-agents, defi, infra" maxLength={32} />
+                  {!slugValid && slug.length > 0 && <span className="field__help loss">3–32 lowercase alphanumeric and hyphens.</span>}
+                </label>
+                <label className="field">
+                  <span className="label">Desk Name</span>
+                  <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" maxLength={48} />
+                </label>
+              </div>
+              <div className="grid grid--2">
+                <label className="field">
+                  <span className="label">Minimum Share (bps)</span>
+                  <input type="number" min={1} max={5000} value={minBps} onChange={(e) => setMinBps(Number(e.target.value))} />
+                  <span className="field__help">{(minBps / 100).toFixed(2)}% fee share</span>
+                </label>
+                <label className="field" style={{ justifyContent: "center" }}>
+                  <label className="inline" style={{ cursor: "pointer" }}>
+                    <input type="checkbox" checked={allowlistOnly} onChange={(e) => setAllowlistOnly(e.target.checked)} />
+                    <span>Curated allowlist only</span>
+                  </label>
+                </label>
+              </div>
+              {!wallet.connected ? (
+                <WalletMultiButton className="wallet-button" />
+              ) : (
+                <button
+                  className="button button--primary"
+                  disabled={!slugValid || !nameValid || !minBpsValid || state.stage === "simulating" || state.stage === "awaiting-signature" || state.stage === "sent"}
+                  onClick={handleCreateDesk}
+                >
+                  Create Desk on-chain
+                </button>
+              )}
+              <TxStatus state={state} />
+            </div>
+          </Panel>
         )}
       </div>
     </>
@@ -101,3 +216,4 @@ export function DeskDetail() {
     </>
   );
 }
+
