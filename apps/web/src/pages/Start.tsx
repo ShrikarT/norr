@@ -3,8 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { sha256 } from "@noble/hashes/sha2.js";
-import { quoteBuy } from "@norr/sdk";
+import { quoteBuy, DISCRIMINATORS } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx } from "../lib/tx";
 import { PROGRAM_IDS, short } from "../lib/config";
@@ -54,10 +53,6 @@ export function StartIndex() {
       </div>
     </>
   );
-}
-
-function getAnchorDiscriminator(name: string): Buffer {
-  return Buffer.from(sha256(new TextEncoder().encode(`global:${name}`)).subarray(0, 8));
 }
 
 function u32le(n: number): Buffer {
@@ -131,7 +126,7 @@ export function CreateLaunch() {
         { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
       ],
       data: Buffer.concat([
-        getAnchorDiscriminator("create"),
+        Buffer.from(DISCRIMINATORS.launch.create),
         projectMintKeypair.publicKey.toBuffer(),
         wallet.publicKey.toBuffer(),
         salePda.toBuffer(),
