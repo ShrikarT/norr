@@ -57,6 +57,9 @@ export const TOKEN_2022_PROGRAM = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 export const ZK_PROOF_PROGRAM = "ZkE1Gama1Proof11111111111111111111111111111";
 export const MEMO_PROGRAM = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
+/** Canonical Devnet Circle USDC Mint */
+export const DEVNET_USDC_MINT = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+
 /** Confidential-transfer evidence created on Devnet by this project.
  *  Every address below is re-read live from RPC before it is shown as verified. */
 export const CT_EVIDENCE = {

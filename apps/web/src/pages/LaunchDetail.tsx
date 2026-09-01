@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -8,7 +8,7 @@ import { useCluster } from "../lib/status";
 import { useTx, toWeb3Instruction } from "../lib/tx";
 import { useLaunch, type LiveCatalogLaunch } from "../lib/onchain";
 import type { CatalogLaunch, CurveParams } from "../lib/catalog";
-import { PROGRAM_IDS, TOKEN_2022_PROGRAM, short } from "../lib/config";
+import { PROGRAM_IDS, TOKEN_2022_PROGRAM, DEVNET_USDC_MINT, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 
 const LEGACY_TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
@@ -121,8 +121,62 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
   const [mode, setMode] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("10");
   const [slippageBps, setSlippageBps] = useState(50);
+  const [userUsdcBalance, setUserUsdcBalance] = useState<number | null>(null);
+  const [userTokenBalance, setUserTokenBalance] = useState<number | null>(null);
 
   const marketLive = c.programsDeployed?.market === true;
+
+  let projectMintKey: PublicKey;
+  try {
+    if (launch.projectMint) {
+      projectMintKey = new PublicKey(launch.projectMint);
+    } else if (launch.onchain?.projectMint) {
+      projectMintKey = new PublicKey(launch.onchain.projectMint);
+    } else if (launch.id.length >= 32 && launch.id.length <= 44 && !launch.id.includes("-")) {
+      projectMintKey = new PublicKey(launch.id);
+    } else {
+      projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
+    }
+  } catch {
+    projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
+  }
+
+  const baseMintStr = launch.curveAccount?.baseMint || launch.onchain?.contributionMint || DEVNET_USDC_MINT;
+  const baseMint = new PublicKey(baseMintStr);
+
+  useEffect(() => {
+    if (!wallet.publicKey || !c.connection) {
+      setUserUsdcBalance(null);
+      setUserTokenBalance(null);
+      return;
+    }
+    let active = true;
+    const userBaseAta = ata(wallet.publicKey, baseMint);
+    c.connection.getTokenAccountBalance(userBaseAta).then(
+      (res) => {
+        if (active) setUserUsdcBalance(res.value.uiAmount ?? 0);
+      },
+      () => {
+        if (active) setUserUsdcBalance(0);
+      }
+    );
+
+    if (projectMintKey) {
+      const userTokenAta = ata(wallet.publicKey, projectMintKey);
+      c.connection.getTokenAccountBalance(userTokenAta).then(
+        (res) => {
+          if (active) setUserTokenBalance(res.value.uiAmount ?? 0);
+        },
+        () => {
+          if (active) setUserTokenBalance(0);
+        }
+      );
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [wallet.publicKey, baseMint, projectMintKey, c.connection, state.stage]);
 
   const quote = useMemo(() => {
     const num = Number.parseFloat(amount);
@@ -145,21 +199,6 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
     if (!wallet.publicKey || !quote) return;
     reset();
 
-    let projectMintKey: PublicKey;
-    try {
-      if (launch.projectMint) {
-        projectMintKey = new PublicKey(launch.projectMint);
-      } else if (launch.onchain?.projectMint) {
-        projectMintKey = new PublicKey(launch.onchain.projectMint);
-      } else if (launch.id.length >= 32 && launch.id.length <= 44 && !launch.id.includes("-")) {
-        projectMintKey = new PublicKey(launch.id);
-      } else {
-        projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
-      }
-    } catch {
-      projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
-    }
-
     let curvePda: PublicKey;
     if (launch.curvePda) {
       curvePda = new PublicKey(launch.curvePda);
@@ -168,9 +207,6 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
     } else {
       curvePda = derivePda(PROGRAM_IDS.market, [Buffer.from("curve"), projectMintKey.toBuffer()]);
     }
-
-    const baseMintStr = launch.curveAccount?.baseMint || launch.onchain?.contributionMint || "Ez3fzpwBkpBN69b7tnB6KeqLF84E5yvTA6neCaoeUnQ9";
-    const baseMint = new PublicKey(baseMintStr);
 
     const tokenVault = launch.curveAccount?.tokenVault
       ? new PublicKey(launch.curveAccount.tokenVault)
@@ -229,6 +265,8 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
       baseMint: baseMint.toBase58(),
       router: router.toBase58(),
       user: wallet.publicKey.toBase58(),
+      userBaseToken: userBaseToken.toBase58(),
+      userProjectToken: userProjectToken.toBase58(),
       instructionCount: instructions.length,
       quote,
       minOut: minOut.toString(),
@@ -236,6 +274,12 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
 
     await run(c.connection, wallet, instructions);
   };
+
+  const parsedAmount = Number.parseFloat(amount);
+  const isInsufficient =
+    mode === "buy"
+      ? userUsdcBalance !== null && parsedAmount > 0 && parsedAmount > userUsdcBalance
+      : userTokenBalance !== null && parsedAmount > 0 && parsedAmount > userTokenBalance;
 
   return (
     <Panel title="Trade" aside={<Badge kind="sealed">bonding curve</Badge>}>
@@ -250,7 +294,23 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
         </div>
         <div className="grid grid--2">
           <label className="field">
-            <span className="label">Pay / {mode === "buy" ? "USDC" : launch.symbol}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span className="label">Pay / {mode === "buy" ? "USDC" : launch.symbol}</span>
+              {wallet.publicKey && (
+                <span className="fine muted" style={{ fontSize: "0.75rem" }}>
+                  Bal:{" "}
+                  <strong className="accent-text">
+                    {mode === "buy"
+                      ? userUsdcBalance !== null
+                        ? `${userUsdcBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDC`
+                        : "…"
+                      : userTokenBalance !== null
+                      ? `${userTokenBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${launch.symbol}`
+                      : "…"}
+                  </strong>
+                </span>
+              )}
+            </div>
             <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder="0.00" />
           </label>
           <label className="field">
@@ -290,6 +350,15 @@ function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: Curv
           />
         ) : !wallet.connected ? (
           <WalletMultiButton className="wallet-button" />
+        ) : isInsufficient ? (
+          <div className="stack" style={{ gap: 8 }}>
+            <button className="button button--primary" disabled={true}>
+              Insufficient {mode === "buy" ? "USDC" : launch.symbol} Balance
+            </button>
+            <p className="fine" style={{ color: "var(--color-warn, #f59e0b)" }}>
+              Your connected wallet has {mode === "buy" ? `${userUsdcBalance ?? 0} USDC` : `${userTokenBalance ?? 0} ${launch.symbol}`} (requires {amount} {mode === "buy" ? "USDC" : launch.symbol}).
+            </p>
+          </div>
         ) : (
           <button
             className="button button--primary"

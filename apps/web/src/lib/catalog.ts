@@ -34,6 +34,10 @@ export type CatalogLaunch = Readonly<{
   supply: string;
   curve?: CurveParams | undefined;
   splits: readonly Split[];
+  address?: string | undefined;
+  projectMint?: string | undefined;
+  curvePda?: string | undefined;
+  routerPda?: string | undefined;
 }>;
 
 export type CatalogDesk = Readonly<{
@@ -55,6 +59,10 @@ export const SAMPLE_LAUNCHES: readonly CatalogLaunch[] = [
     description:
       "Official live on-chain token launch on Solana Devnet. Fixed project supply with fee routing and constant-product curve.",
     supply: "1,000,000,000",
+    address: "BjKdUzAkuEepXXTY6UQSVzfCa3c9oaSTX2ngm4r5t5eK",
+    projectMint: "CN7RyBfAYJBgyPpjb4fexk9dWdvVoyRBTtakrDfu21qa",
+    curvePda: "FiCTychkUjQiPVgwMmezrA31HttcHPzQvmrc2SK9tKSD",
+    routerPda: "EvVjwbwr59o24ThhxVKtXQj5SnYoCW7ocqbYofyXfmtB",
     curve: {
       virtualBase: 30_000_000_000n,
       baseReserve: 0n,

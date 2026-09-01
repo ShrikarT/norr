@@ -7,7 +7,7 @@ import { quoteBuy, DISCRIMINATORS, buildMarketInitializeInstruction, buildMarket
 import { useCluster } from "../lib/status";
 import { useTx, toWeb3Instruction } from "../lib/tx";
 import { cacheCreatedLaunch } from "../lib/onchain";
-import { PROGRAM_IDS, short } from "../lib/config";
+import { PROGRAM_IDS, DEVNET_USDC_MINT, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 
 export function StartIndex() {
@@ -146,7 +146,7 @@ export function CreateLaunch() {
     const instructions: TransactionInstruction[] = [ix];
 
     if (mode === "instant") {
-      const baseMint = new PublicKey("Ez3fzpwBkpBN69b7tnB6KeqLF84E5yvTA6neCaoeUnQ9");
+      const baseMint = new PublicKey(DEVNET_USDC_MINT);
       const ATA_PROGRAM = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
       const LEGACY_TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
       const tokenVault = PublicKey.findProgramAddressSync(
