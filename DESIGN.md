@@ -20,17 +20,11 @@ has structure.
 
 ---
 
-## The accent, restated honestly
+## The accent system
 
-The previous accent,  red `#e84142`, was justified by derivation: *the colour of
-the chain this runs on.* On Solana that justification is gone. Keeping the red would leave
-a brand-arbitrary hue defended by an argument that no longer applies — and worse, it would
-leave the accent **sharing a hue with `--loss`**, which the old document had to work around
-by distinguishing them through form rather than colour.
+The Norr accent is Solana violet (`#ab7aff` for high-contrast readable text, `#9945ff` for badges and marks). Red (`#e84142`) is strictly reserved for `--loss` and negative market movements.
 
-So the accent moves to Solana violet, and the workaround disappears with it. This is a
-net gain, not a lateral move: after this change, **red on this surface means exactly one
-thing — a position that went down.**
+On this surface, **red means exactly one thing: a position or price that went down.**
 
 ### What was rejected, and why
 

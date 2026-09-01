@@ -216,12 +216,12 @@ function ContributePanel() {
           contribution size is encrypted.
         </p>
         <CapabilityGate
-          title="Confidential transfer"
+          title="Confidential transfer gate"
           reason={
             <>
-              The canonical Token-2022 program on every public Solana cluster is compiled without the zk-ops feature,
-              so ConfidentialTransferInstruction::Transfer returns InvalidInstructionData. Norr keeps this path fail
-              closed rather than substituting an unverified ledger. Details on{" "}
+              Token-2022 confidential transfer lifecycle (Steps 1–8) is confirmed on Solana Devnet. Private on-chain
+              contribution paths remain fail closed under <code>P0Required</code> until external cryptographic review
+              attestations are finalized. See live evidence and verification status on{" "}
               <Link to="/private" className="accent-text">
                 Private
               </Link>

@@ -151,9 +151,9 @@ export function CreateLaunch() {
         copy="Parameters are validated locally with the exact program arithmetic. Nothing is submitted until every constraint passes and you sign."
       />
       {mode === "raise" && (
-        <Callout tone="risk">
-          Sealed raises depend on Token-2022 confidential transfers, which are currently disabled in the canonical
-          program on public clusters. A raise configured today cannot open for private contributions —{" "}
+        <Callout tone="note">
+          Sealed raises utilize Token-2022 confidential transfers (verified on Devnet). Private value movements
+          remain fail-closed under <code>P0Required</code> until external security review attestations are finalized —{" "}
           <Link to="/private" className="accent-text">
             details
           </Link>
