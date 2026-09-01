@@ -131,18 +131,6 @@ Norr leverages Solana's native **SPL Token-2022 Confidential Transfer Extension*
 
 ---
 
-## Norr V2 — Future Roadmap
-
-- **Privacy Rings** — Integrate Solana Custom Rings for stronger contributor privacy and reduced linkability.
-- **MagicBlock Private Execution** — Use Private Ephemeral Rollups for real-time confidential IDO execution.
-- **Sealed-Bid IDOs** — Hide bids, live demand, and allocation until the launch closes.
-- **Verifiable Settlement** — Publish cryptographic proofs and Merkle roots so anyone can verify the final outcome.
-- **Programmable Privacy** — Let each launch choose its privacy and auditor policy.
-
-**Vision:** Private during formation. Transparent and verifiable after settlement.
-
----
-
 ## Getting Started
 
 ### Prerequisites
