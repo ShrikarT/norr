@@ -49,11 +49,12 @@ Norr provides privacy during capital formation and mathematical proof at settlem
 ## How It Works
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TD
-    A["🟢 1. RAISE OPENS<br>Founder defines fixed supply, curve params, and raise duration"] --> B["🔒 2. CONFIDENTIAL CONTRIBUTION<br>Amounts encrypted via Token-2022 Twisted ElGamal<br>Zero-knowledge equality, validity, and range proofs verified"]
-    B --> C["⏱ 3. RAISE CLOSES<br>Contribution window ends; ciphertexts locked on-chain"]
-    C --> D["📖 4. DETERMINISTIC SETTLEMENT<br>Auditor tallies amounts; Merkle root committed to norr-claim<br>Allocations verifiable in-browser"]
-    D --> E["📈 5. AUTONOMOUS SECONDARY MARKET<br>Project token activates on norr-market bonding curve<br>Fees routed automatically via norr-fees"]
+    A["🟢 1. RAISE OPENS\nFounder defines fixed supply, curve params, and raise duration"] --> B["🔒 2. CONFIDENTIAL CONTRIBUTION\nAmounts encrypted via Token-2022 Twisted ElGamal\nZero-knowledge equality, validity, and range proofs verified"]
+    B --> C["⏱ 3. RAISE CLOSES\nContribution window ends; ciphertexts locked on-chain"]
+    C --> D["📖 4. DETERMINISTIC SETTLEMENT\nAuditor tallies amounts; Merkle root committed to norr-claim\nAllocations verifiable in-browser"]
+    D --> E["📈 5. AUTONOMOUS SECONDARY MARKET\nProject token activates on norr-market bonding curve\nFees routed automatically via norr-fees"]
 
     style A fill:#150a2b,stroke:#9945ff,color:#ece9e3
     style B fill:#150a2b,stroke:#9945ff,color:#ece9e3
@@ -69,31 +70,40 @@ Norr is **not a mixer**. Contributor wallet identities, deposit timing, aggregat
 ## Architecture
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TB
     subgraph CLIENT["🖥 FRONTEND & SDK"]
-        WEB["@norr/web (Vite + React)<br>https://norr-nine.vercel.app/"]
+        WEB["@norr/web (Vite + React)\nhttps://norr-nine.vercel.app/"]
         SDK["@norr/sdk (TypeScript Clients)"]
         CONF["@norr/confidential (ZK Proof Pipeline)"]
         TALLY["@norr/tally (Deterministic Settlement)"]
     end
 
     subgraph ONCHAIN["⛓ NORR ON-CHAIN PROGRAMS (Anchor 0.30.1)"]
-        LAUNCH["norr-launch<br>4orq3Yji..."]
-        MARKET["norr-market<br>3syw2wKJ..."]
-        FEES["norr-fees<br>3VNFr1kk..."]
-        BOARDS["norr-boards<br>7EtFrHpK..."]
-        SOCIAL["norr-social<br>4BNL4GDk..."]
-        CLAIM["norr-claim<br>HzV76HzG..."]
-        WRAP["norr-wrap<br>6anK695v..."]
+        LAUNCH["norr-launch\n4orq3Yji..."]
+        MARKET["norr-market\n3syw2wKJ..."]
+        FEES["norr-fees\n3VNFr1kk..."]
+        BOARDS["norr-boards\n7EtFrHpK..."]
+        SOCIAL["norr-social\n4BNL4GDk..."]
+        CLAIM["norr-claim\nHzV76HzG..."]
+        WRAP["norr-wrap\n6anK695v..."]
     end
 
     subgraph SOLANA["🔐 NATIVE SOLANA INFRASTRUCTURE"]
-        T22["SPL Token-2022 Program<br>Confidential Transfer Extension"]
-        ZK["ZK ElGamal Proof Program<br>ZkElGama1Proof11111111111111111111111111111"]
+        T22["SPL Token-2022 Program\nConfidential Transfer Extension"]
+        ZK["ZK ElGamal Proof Program\nZkElGama1Proof11111111111111111111111111111"]
     end
 
-    WEB --> SDK & CONF & TALLY
-    SDK --> LAUNCH & MARKET & FEES & BOARDS & SOCIAL & CLAIM & WRAP
+    WEB --> SDK
+    WEB --> CONF
+    WEB --> TALLY
+    SDK --> LAUNCH
+    SDK --> MARKET
+    SDK --> FEES
+    SDK --> BOARDS
+    SDK --> SOCIAL
+    SDK --> CLAIM
+    SDK --> WRAP
     CONF --> ZK
     WRAP -->|"P0Required Gate"| T22
     T22 --> ZK
