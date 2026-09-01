@@ -50,16 +50,10 @@ Norr provides privacy during capital formation and mathematical proof at settlem
 
 ```mermaid
 flowchart TD
-    A["🟢 1. RAISE OPENS<br/>Founder defines fixed supply, curve params, and raise duration"] --> B["🔒 2. CONFIDENTIAL CONTRIBUTION<br/>Amounts encrypted via Token-2022 Twisted ElGamal<br/>Zero-knowledge equality, validity, and range proofs verified"]
-    B --> C["⏱ 3. RAISE CLOSES<br/>Contribution window ends; ciphertexts locked on-chain"]
-    C --> D["📖 4. DETERMINISTIC SETTLEMENT<br/>Auditor tallies amounts; Merkle root committed to norr-claim<br/>Allocations verifiable in-browser"]
-    D --> E["📈 5. AUTONOMOUS SECONDARY MARKET<br/>Project token activates on norr-market bonding curve<br/>Fees routed automatically via norr-fees"]
-
-    style A fill:#150a2b,stroke:#9945ff,color:#ece9e3
-    style B fill:#150a2b,stroke:#9945ff,color:#ece9e3
-    style C fill:#150a2b,stroke:#9945ff,color:#ece9e3
-    style D fill:#10241b,stroke:#3fcf8a,color:#ece9e3
-    style E fill:#10241b,stroke:#3fcf8a,color:#ece9e3
+    A["1. RAISE OPENS<br>Founder defines fixed supply, curve params, and raise duration"] --> B["2. CONFIDENTIAL CONTRIBUTION<br>Amounts encrypted via Token-2022 Twisted ElGamal<br>Zero-knowledge equality, validity, and range proofs verified"]
+    B --> C["3. RAISE CLOSES<br>Contribution window ends, ciphertexts locked on-chain"]
+    C --> D["4. DETERMINISTIC SETTLEMENT<br>Auditor tallies amounts, Merkle root committed to norr-claim<br>Allocations verifiable in-browser"]
+    D --> E["5. AUTONOMOUS SECONDARY MARKET<br>Project token activates on norr-market bonding curve<br>Fees routed automatically via norr-fees"]
 ```
 
 Norr is **not a mixer**. Contributor wallet identities, deposit timing, aggregate raise totals, and claim transactions are always public. Only individual contribution amounts are encrypted, and only while the raise is actively accepting funds.
@@ -70,37 +64,43 @@ Norr is **not a mixer**. Contributor wallet identities, deposit timing, aggregat
 
 ```mermaid
 flowchart TB
-    subgraph CLIENT["🖥 FRONTEND & SDK"]
-        WEB["@norr/web (Vite + React)<br/>https://norr-nine.vercel.app/"]
+    subgraph CLIENT["Frontend and SDK"]
+        WEB["@norr/web (Vite + React)"]
         SDK["@norr/sdk (TypeScript Clients)"]
         CONF["@norr/confidential (ZK Proof Pipeline)"]
         TALLY["@norr/tally (Deterministic Settlement)"]
     end
 
-    subgraph ONCHAIN["⛓ NORR ON-CHAIN PROGRAMS (Anchor 0.30.1)"]
-        LAUNCH["norr-launch<br/>4orq3Yji..."]
-        MARKET["norr-market<br/>3syw2wKJ..."]
-        FEES["norr-fees<br/>3VNFr1kk..."]
-        BOARDS["norr-boards<br/>7EtFrHpK..."]
-        SOCIAL["norr-social<br/>4BNL4GDk..."]
-        CLAIM["norr-claim<br/>HzV76HzG..."]
-        WRAP["norr-wrap<br/>6anK695v..."]
+    subgraph ONCHAIN["Norr On-Chain Programs (Anchor 0.30.1)"]
+        LAUNCH["norr-launch (4orq3Yji...)"]
+        MARKET["norr-market (3syw2wKJ...)"]
+        FEES["norr-fees (3VNFr1kk...)"]
+        BOARDS["norr-boards (7EtFrHpK...)"]
+        SOCIAL["norr-social (4BNL4GDk...)"]
+        CLAIM["norr-claim (HzV76HzG...)"]
+        WRAP["norr-wrap (6anK695v...)"]
     end
 
-    subgraph SOLANA["🔐 NATIVE SOLANA INFRASTRUCTURE"]
-        T22["SPL Token-2022 Program<br/>Confidential Transfer Extension"]
-        ZK["ZK ElGamal Proof Program<br/>ZkElGama1Proof11111111111111111111111111111"]
+    subgraph SOLANA["Native Solana Infrastructure"]
+        T22["SPL Token-2022 Program (Confidential Transfer Extension)"]
+        ZK["ZK ElGamal Proof Program (ZkElGama1Proof...)"]
     end
 
-    WEB --> SDK & CONF & TALLY
-    SDK --> LAUNCH & MARKET & FEES & BOARDS & SOCIAL & CLAIM & WRAP
+    WEB --> SDK
+    WEB --> CONF
+    WEB --> TALLY
+
+    SDK --> LAUNCH
+    SDK --> MARKET
+    SDK --> FEES
+    SDK --> BOARDS
+    SDK --> SOCIAL
+    SDK --> CLAIM
+    SDK --> WRAP
+
     CONF --> ZK
     WRAP -->|"P0Required Gate"| T22
     T22 --> ZK
-
-    style CLIENT fill:#0e1013,stroke:#3a4048,color:#ece9e3
-    style ONCHAIN fill:#150a2b,stroke:#9945ff,color:#ece9e3
-    style SOLANA fill:#10241b,stroke:#3fcf8a,color:#ece9e3
 ```
 
 ---
