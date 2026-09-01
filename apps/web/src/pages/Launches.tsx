@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCluster } from "../lib/status";
-import { SAMPLE_LAUNCHES, type CatalogLaunch } from "../lib/catalog";
+import { useLiveLaunches, type LiveCatalogLaunch } from "../lib/onchain";
 import { priceQ64 } from "@norr/sdk";
 import { Badge, Callout, PageHead } from "../components/primitives";
 
-function curvePrice(launch: CatalogLaunch): string | null {
+function curvePrice(launch: LiveCatalogLaunch): string | null {
   if (!launch.curve) return null;
   const q = priceQ64(launch.curve.virtualBase + launch.curve.baseReserve, launch.curve.tokenReserve);
   // price = q64 / 2^64, base 6dp per token 9dp → *1e3 for USDC/token
@@ -17,7 +17,9 @@ export function Launches() {
   const navigate = useNavigate();
   const c = useCluster();
   const [model, setModel] = useState<"all" | "instant" | "raise">("all");
-  const launches = SAMPLE_LAUNCHES.filter((l) => model === "all" || l.model === model);
+  const { launches, loading, refresh } = useLiveLaunches();
+  const filtered = launches.filter((l) => model === "all" || l.model === model);
+  const liveCount = launches.filter((l) => l.isLiveOnChain).length;
   const programsLive = c.deployedCount > 0;
 
   return (
@@ -61,11 +63,20 @@ export function Launches() {
               Sealed
             </button>
           </div>
-          <span className="muted fine">{launches.length} reference launch{launches.length === 1 ? "" : "es"}</span>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {loading && <span className="muted fine">Syncing on-chain…</span>}
+            <span className="muted fine">
+              {liveCount > 0 ? `${liveCount} live on Devnet · ` : ""}
+              {filtered.length} total launch{filtered.length === 1 ? "" : "es"}
+            </span>
+            <button className="button button--ghost" onClick={refresh} title="Refresh on-chain launches">
+              ↺
+            </button>
+          </div>
         </div>
         <div className="panel__body">
           <div className="grid grid--2">
-            {launches.map((launch) => (
+            {filtered.map((launch) => (
               <LaunchCard launch={launch} key={launch.id} />
             ))}
           </div>
@@ -75,7 +86,7 @@ export function Launches() {
   );
 }
 
-export function LaunchCard({ launch }: { launch: CatalogLaunch }) {
+export function LaunchCard({ launch }: { launch: LiveCatalogLaunch }) {
   const price = curvePrice(launch);
   return (
     <Link to={`/raise/${launch.id}`} className="launch-card">
@@ -89,7 +100,10 @@ export function LaunchCard({ launch }: { launch: CatalogLaunch }) {
             </p>
           </div>
         </div>
-        <Badge kind={launch.model === "raise" ? "sealed" : "held"}>{launch.state === "draft" ? "reference" : launch.state}</Badge>
+        <div style={{ display: "flex", gap: 4 }}>
+          {launch.isLiveOnChain && <Badge kind="settled">on-chain</Badge>}
+          <Badge kind={launch.model === "raise" ? "sealed" : "held"}>{launch.state === "draft" ? "reference" : launch.state}</Badge>
+        </div>
       </div>
       <p>{launch.description}</p>
       <div className="launch-card__metrics">

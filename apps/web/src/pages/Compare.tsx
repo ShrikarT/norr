@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { priceQ64 } from "@norr/sdk";
-import { SAMPLE_LAUNCHES } from "../lib/catalog";
+import { useLiveLaunches } from "../lib/onchain";
 import { useCluster } from "../lib/status";
-import { Callout, PageHead, Panel } from "../components/primitives";
+import { Badge, Callout, PageHead, Panel } from "../components/primitives";
 
 export function Compare() {
   const c = useCluster();
+  const { launches } = useLiveLaunches();
   return (
     <>
       <PageHead
@@ -34,7 +35,7 @@ export function Compare() {
               </tr>
             </thead>
             <tbody>
-              {SAMPLE_LAUNCHES.map((l) => {
+              {launches.map((l) => {
                 const price = l.curve
                   ? ((Number(priceQ64(l.curve.virtualBase + l.curve.baseReserve, l.curve.tokenReserve)) / 2 ** 64) * 1e3).toFixed(6)
                   : null;
@@ -46,6 +47,11 @@ export function Compare() {
                         <b>{l.name}</b>
                       </Link>{" "}
                       <span className="muted">({l.symbol})</span>
+                      {l.isLiveOnChain && (
+                        <span style={{ marginLeft: 6 }}>
+                          <Badge kind="settled">on-chain</Badge>
+                        </span>
+                      )}
                     </td>
                     <td>{l.model === "instant" ? "instant" : "sealed"}</td>
                     <td className="tabular">{l.supply}</td>
