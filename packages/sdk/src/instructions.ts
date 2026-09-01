@@ -1,4 +1,4 @@
-﻿import { concatBytes, u32le, u64le, u16le, utf8, addressBytes } from "./bytes.js";
+import { concatBytes, u32le, u64le, u16le, utf8, addressBytes } from "./bytes.js";
 
 export type AccountMeta = Readonly<{
   pubkey: string;
@@ -21,26 +21,29 @@ export const DISCRIMINATORS = {
     buy: new Uint8Array([102, 6, 61, 18, 1, 218, 235, 234]),
     sell: new Uint8Array([51, 230, 133, 164, 1, 127, 131, 173]),
     activate: new Uint8Array([194, 203, 35, 100, 151, 55, 170, 82]),
-    graduate: new Uint8Array([156, 128, 161, 237, 123, 154, 222, 38]),
+    graduate: new Uint8Array([45, 235, 225, 181, 17, 218, 64, 130]),
   },
   fees: {
     initialize: new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237]),
-    accrue: new Uint8Array([118, 10, 114, 188, 151, 74, 174, 183]),
-    release: new Uint8Array([121, 62, 132, 196, 215, 11, 240, 157]),
-    releaseAll: new Uint8Array([182, 184, 197, 7, 72, 184, 98, 93]),
+    lock: new Uint8Array([21, 19, 208, 43, 237, 62, 255, 87]),
+    release: new Uint8Array([253, 249, 15, 206, 28, 127, 193, 241]),
+    sync: new Uint8Array([4, 219, 40, 164, 21, 157, 189, 88]),
   },
   launch: {
-    create: new Uint8Array([230, 245, 175, 104, 223, 199, 90, 84]),
-    configure: new Uint8Array([73, 55, 170, 158, 24, 76, 240, 103]),
+    create: new Uint8Array([24, 30, 200, 40, 5, 28, 7, 119]),
+    setUri: new Uint8Array([72, 22, 136, 186, 78, 5, 136, 229]),
+    attachBoard: new Uint8Array([91, 244, 148, 124, 251, 39, 36, 174]),
+    activate: new Uint8Array([194, 203, 35, 100, 151, 55, 170, 82]),
   },
   boards: {
-    create: new Uint8Array([57, 193, 232, 18, 185, 224, 82, 102]),
-    update: new Uint8Array([219, 200, 46, 69, 130, 160, 0, 128]),
+    create: new Uint8Array([24, 30, 200, 40, 5, 28, 7, 119]),
+    setTerms: new Uint8Array([198, 18, 197, 226, 220, 230, 87, 173]),
+    update: new Uint8Array([219, 200, 88, 176, 158, 63, 253, 127]),
   },
   social: {
-    initThread: new Uint8Array([148, 110, 191, 149, 192, 139, 44, 192]),
-    post: new Uint8Array([143, 85, 95, 222, 163, 102, 140, 183]),
-    hide: new Uint8Array([203, 170, 220, 93, 113, 190, 48, 198]),
+    initializeThread: new Uint8Array([207, 78, 91, 185, 87, 244, 142, 11]),
+    post: new Uint8Array([223, 96, 234, 236, 158, 106, 145, 94]),
+    hide: new Uint8Array([174, 155, 104, 251, 192, 201, 92, 117]),
     createProfile: new Uint8Array([225, 230, 175, 59, 175, 239, 195, 158]),
     follow: new Uint8Array([170, 4, 170, 157, 247, 85, 213, 114]),
     unfollow: new Uint8Array([115, 60, 49, 230, 140, 157, 116, 230]),
@@ -50,8 +53,19 @@ export const DISCRIMINATORS = {
   },
   claim: {
     initialize: new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237]),
-    claim: new Uint8Array([62, 198, 214, 193, 213, 159, 108, 210]),
-    refund: new Uint8Array([2, 96, 183, 251, 63, 206, 107, 110]),
+    contribute: new Uint8Array([82, 33, 68, 131, 32, 0, 205, 95]),
+    openClaim: new Uint8Array([222, 101, 161, 226, 92, 247, 44, 252]),
+    settle: new Uint8Array([175, 42, 185, 87, 144, 131, 102, 212]),
+    settleRefund: new Uint8Array([184, 199, 80, 86, 67, 46, 2, 113]),
+    activate: new Uint8Array([194, 203, 35, 100, 151, 55, 170, 82]),
+  },
+  wrap: {
+    initialize: new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237]),
+    wrap: new Uint8Array([178, 40, 10, 189, 228, 129, 186, 140]),
+    unwrap: new Uint8Array([126, 175, 198, 14, 212, 69, 50, 44]),
+    rotateAuditor: new Uint8Array([82, 153, 203, 218, 123, 145, 232, 93]),
+    setPaused: new Uint8Array([91, 60, 125, 192, 176, 225, 166, 218]),
+    recoverExcess: new Uint8Array([137, 118, 196, 86, 140, 124, 81, 222]),
   }
 } as const;
 

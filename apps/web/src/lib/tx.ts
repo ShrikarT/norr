@@ -74,7 +74,10 @@ export function useTx() {
         const sim = await connection.simulateTransaction(tx);
         const logs = sim.value.logs ?? [];
         if (sim.value.err) {
-          const detail = logs.filter((l) => /error|failed/i.test(l)).slice(-2).join(" · ");
+          let detail = logs.filter((l) => /error|failed/i.test(l)).slice(-2).join(" · ");
+          if (sim.value.err === "AccountNotFound") {
+            detail = "Wallet account not found on Devnet. Please fund your wallet with Devnet SOL to pay transaction rent and fees.";
+          }
           setState({
             stage: "failed",
             signature: null,
