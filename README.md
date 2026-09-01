@@ -217,19 +217,6 @@ cargo check --workspace
 
 ---
 
-## Deployment
-
-Refer to [`DEPLOYMENT.md`](DEPLOYMENT.md) for full operator instructions on deploying Anchor programs to Devnet/Mainnet and hosting the frontend on Vercel.
-
----
-
-## Demo
-
-- **Hosted Web App**: [https://norr-nine.vercel.app/](https://norr-nine.vercel.app/)
-- **Walkthrough Video**: [`norr-demo.mp4`](norr-demo.mp4)
-- **Demo Script**: [`docs/norr-demo-script.md`](docs/norr-demo-script.md)
-
----
 
 ## Known Limitations
 
