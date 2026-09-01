@@ -3,17 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { sha256 } from "@noble/hashes/sha2.js";
+import { DISCRIMINATORS } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx } from "../lib/tx";
 import { SAMPLE_DESKS, SAMPLE_LAUNCHES } from "../lib/catalog";
 import { PROGRAM_IDS, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 import { LaunchCard } from "./Launches";
-
-function getAnchorDiscriminator(name: string): Buffer {
-  return Buffer.from(sha256(new TextEncoder().encode(`global:${name}`)).subarray(0, 8));
-}
 
 function u16le(n: number): Buffer {
   const b = Buffer.alloc(2);
@@ -66,7 +62,7 @@ export function Desks() {
         { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
       ],
       data: Buffer.concat([
-        getAnchorDiscriminator("create_board"),
+        Buffer.from(DISCRIMINATORS.boards.create),
         u32le(slugBytes.length), slugBytes,
         u32le(nameBytes.length), nameBytes,
         u32le(uriBytes.length), uriBytes,
