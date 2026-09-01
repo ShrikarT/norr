@@ -7,43 +7,33 @@ Norr is an on-chain capital formation and trading protocol designed for Solana. 
 ## 1. System Architecture
 
 ```mermaid
-graph TB
-    subgraph Client [Frontend and Client SDKs]
-        WEB[norr-web: Vite and React SPA]
-        SDK[norr-sdk: TypeScript Clients]
-        CONF[norr-confidential: ZK Proof Pipeline]
-        TALLY[norr-tally: Deterministic Settlement]
+flowchart TB
+    subgraph CLIENT["🖥 FRONTEND & SDK"]
+        WEB["@norr/web (Vite + React SPA)<br/>https://norr-nine.vercel.app/"]
+        SDK["@norr/sdk (TypeScript Clients & Discriminators)"]
+        CONF["@norr/confidential (ZK Proof Pipeline)"]
+        TALLY["@norr/tally (Deterministic Settlement)"]
     end
 
-    subgraph OnChain [Norr On-Chain Programs]
-        LAUNCH[norr-launch: 4orq3Yji...]
-        MARKET[norr-market: 3syw2wKJ...]
-        FEES[norr-fees: 3VNFr1kk...]
-        BOARDS[norr-boards: 7EtFrHpK...]
-        SOCIAL[norr-social: 4BNL4GDk...]
-        CLAIM[norr-claim: HzV76HzG...]
-        WRAP[norr-wrap: 6anK695v...]
+    subgraph ONCHAIN["⛓ ON-CHAIN PROGRAMS (Anchor 0.30.1)"]
+        LAUNCH["norr-launch<br/>4orq3YjidamefZgGufp6uSpdgxdxpNeCfdy6spZas2cE"]
+        MARKET["norr-market<br/>3syw2wKJNu1TCGArkvnZHvJ8xN9mn5oHdr34yrpJdyXB"]
+        FEES["norr-fees<br/>3VNFr1kkLv1mQkpWQSNBJhDJbpLsELPPF7f5YMWHjMy8"]
+        BOARDS["norr-boards<br/>7EtFrHpKzvKYYWYNqimJu8t4UEmDgxTvwyqnGhcuAenB"]
+        SOCIAL["norr-social<br/>4BNL4GDkUFkCdVZTXo9e3KYRDsD32DXdcrTYJXiucs7g"]
+        CLAIM["norr-claim<br/>HzV76HzGKqDuhmc2f5VoMDEF3tqo3GYGbMGbYyRYWitg"]
+        WRAP["norr-wrap<br/>6anK695vF91cd3r2iin9AMRQzWCfJL6sugZywdfj9cdV"]
     end
 
-    subgraph Solana [Native Solana Infrastructure]
-        T22[SPL Token-2022 Confidential Transfers]
-        ZK[Native ZK ElGamal Proof Program]
+    subgraph SOLANA["🔐 NATIVE SOLANA INFRASTRUCTURE"]
+        T22["SPL Token-2022 Program<br/>Confidential Transfer Extension"]
+        ZK["ZK ElGamal Proof Program<br/>ZkElGama1Proof11111111111111111111111111111"]
     end
 
-    WEB --> SDK
-    WEB --> CONF
-    WEB --> TALLY
-
-    SDK --> LAUNCH
-    SDK --> MARKET
-    SDK --> FEES
-    SDK --> BOARDS
-    SDK --> SOCIAL
-    SDK --> CLAIM
-    SDK --> WRAP
-
+    WEB --> SDK & CONF & TALLY
+    SDK --> LAUNCH & MARKET & FEES & BOARDS & SOCIAL & CLAIM & WRAP
     CONF --> ZK
-    WRAP --> T22
+    WRAP -->|"P0Required Gate"| T22
     T22 --> ZK
 ```
 
