@@ -7,27 +7,27 @@ Norr is an on-chain capital formation and trading protocol designed for Solana. 
 ## 1. System Architecture
 
 ```mermaid
-flowchart TB
-    subgraph CLIENT["Frontend and SDK"]
-        WEB["@norr/web (Vite + React SPA)"]
-        SDK["@norr/sdk (TypeScript Clients and Discriminators)"]
-        CONF["@norr/confidential (ZK Proof Pipeline)"]
-        TALLY["@norr/tally (Deterministic Settlement)"]
+graph TB
+    subgraph Client [Frontend and Client SDKs]
+        WEB[norr-web: Vite and React SPA]
+        SDK[norr-sdk: TypeScript Clients]
+        CONF[norr-confidential: ZK Proof Pipeline]
+        TALLY[norr-tally: Deterministic Settlement]
     end
 
-    subgraph ONCHAIN["On-Chain Programs (Anchor 0.30.1)"]
-        LAUNCH["norr-launch (4orq3Yji...)"]
-        MARKET["norr-market (3syw2wKJ...)"]
-        FEES["norr-fees (3VNFr1kk...)"]
-        BOARDS["norr-boards (7EtFrHpK...)"]
-        SOCIAL["norr-social (4BNL4GDk...)"]
-        CLAIM["norr-claim (HzV76HzG...)"]
-        WRAP["norr-wrap (6anK695v...)"]
+    subgraph OnChain [Norr On-Chain Programs]
+        LAUNCH[norr-launch: 4orq3Yji...]
+        MARKET[norr-market: 3syw2wKJ...]
+        FEES[norr-fees: 3VNFr1kk...]
+        BOARDS[norr-boards: 7EtFrHpK...]
+        SOCIAL[norr-social: 4BNL4GDk...]
+        CLAIM[norr-claim: HzV76HzG...]
+        WRAP[norr-wrap: 6anK695v...]
     end
 
-    subgraph SOLANA["Native Solana Infrastructure"]
-        T22["SPL Token-2022 Program (Confidential Transfer Extension)"]
-        ZK["ZK ElGamal Proof Program (ZkElGama1Proof...)"]
+    subgraph Solana [Native Solana Infrastructure]
+        T22[SPL Token-2022 Confidential Transfers]
+        ZK[Native ZK ElGamal Proof Program]
     end
 
     WEB --> SDK
@@ -43,7 +43,7 @@ flowchart TB
     SDK --> WRAP
 
     CONF --> ZK
-    WRAP -->|"P0Required Gate"| T22
+    WRAP --> T22
     T22 --> ZK
 ```
 
