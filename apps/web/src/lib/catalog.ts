@@ -29,10 +29,10 @@ export type CatalogLaunch = Readonly<{
   symbol: string;
   model: LaunchModel;
   state: LaunchState;
-  desk?: string;
+  desk?: string | undefined;
   description: string;
   supply: string;
-  curve?: CurveParams;
+  curve?: CurveParams | undefined;
   splits: readonly Split[];
 }>;
 

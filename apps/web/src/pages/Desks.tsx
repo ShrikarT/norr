@@ -6,7 +6,7 @@ import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { DISCRIMINATORS } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx } from "../lib/tx";
-import { SAMPLE_DESKS, SAMPLE_LAUNCHES } from "../lib/catalog";
+import { useLiveBoards, useDesk, useLiveLaunches } from "../lib/onchain";
 import { PROGRAM_IDS, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 import { LaunchCard } from "./Launches";
@@ -27,6 +27,7 @@ export function Desks() {
   const wallet = useWallet();
   const c = useCluster();
   const { state, run, reset } = useTx();
+  const { desks, loading, refresh } = useLiveBoards();
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
   const [minBps, setMinBps] = useState(250);
@@ -71,7 +72,10 @@ export function Desks() {
       ]),
     });
 
-    await run(c.connection, wallet, [ix]);
+    const sig = await run(c.connection, wallet, [ix]);
+    if (sig) {
+      setTimeout(() => refresh(), 1000);
+    }
   };
 
   return (
@@ -92,14 +96,17 @@ export function Desks() {
         </Callout>
       )}
       <div className="grid grid--2" style={{ marginTop: 16 }}>
-        {SAMPLE_DESKS.map((b) => (
+        {desks.map((b) => (
           <Link className="launch-card" to={`/desk/${b.slug}`} key={b.slug}>
             <div className="launch-card__top">
               <div>
                 <h2>{b.name}</h2>
                 <div className="address">/{b.slug}</div>
               </div>
-              <Badge kind="sealed">{b.allowlistOnly ? "allowlist" : "open"}</Badge>
+              <div style={{ display: "flex", gap: 4 }}>
+                {b.isLiveOnChain && <Badge kind="settled">on-chain</Badge>}
+                <Badge kind="sealed">{b.allowlistOnly ? "allowlist" : "open"}</Badge>
+              </div>
             </div>
             <p>{b.description}</p>
             <div className="grid grid--2">
@@ -168,8 +175,18 @@ export function Desks() {
 
 export function DeskDetail() {
   const { slug } = useParams();
-  const desk = SAMPLE_DESKS.find((d) => d.slug === slug);
+  const { desk, loading } = useDesk(slug);
+  const { launches } = useLiveLaunches();
   const c = useCluster();
+
+  if (loading && !desk)
+    return (
+      <>
+        <PageHead title="Loading desk…" copy="Querying live Solana cluster for desk account state." />
+        <Empty>Syncing on-chain state…</Empty>
+      </>
+    );
+
   if (!desk)
     return (
       <>
@@ -181,8 +198,12 @@ export function DeskDetail() {
         </Empty>
       </>
     );
-  const attached = SAMPLE_LAUNCHES.filter((l) => l.desk === desk.slug);
+
+  const attached = launches.filter(
+    (l) => l.desk === desk.slug || (desk.address && l.onchain?.board === desk.address)
+  );
   const boardsLive = c.programsDeployed?.boards === true;
+
   return (
     <>
       <PageHead

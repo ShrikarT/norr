@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { quoteBuy, DISCRIMINATORS } from "@norr/sdk";
+import { quoteBuy, DISCRIMINATORS, type OnchainLaunch } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx } from "../lib/tx";
+import { cacheCreatedLaunch } from "../lib/onchain";
 import { PROGRAM_IDS, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 
@@ -64,9 +65,11 @@ function u32le(n: number): Buffer {
 export function CreateLaunch() {
   const { mode: modeParam } = useParams();
   const mode: "instant" | "raise" = modeParam === "raise" ? "raise" : "instant";
+  const navigate = useNavigate();
   const wallet = useWallet();
   const c = useCluster();
   const { state, run, reset } = useTx();
+  const [createdLaunchAddress, setCreatedLaunchAddress] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [supply, setSupply] = useState("1000000000");
@@ -140,7 +143,29 @@ export function CreateLaunch() {
       ]),
     });
 
-    await run(c.connection, wallet, [ix]);
+    const sig = await run(c.connection, wallet, [ix]);
+    if (sig) {
+      const newLaunch: OnchainLaunch = {
+        address: launchPda.toBase58(),
+        creator: wallet.publicKey.toBase58(),
+        board: "11111111111111111111111111111111",
+        projectMint: projectMintKeypair.publicKey.toBase58(),
+        contributionMint: wallet.publicKey.toBase58(),
+        sale: salePda.toBase58(),
+        router: routerPda.toBase58(),
+        curve: curvePda.toBase58(),
+        model: mode,
+        createdAt: Math.floor(Date.now() / 1000),
+        flags: 0,
+        metadataHash: new Uint8Array(32),
+        name: name.trim(),
+        symbol: symbol.trim(),
+        uri: "https://norr.io/token.json",
+        bump: 255,
+      };
+      cacheCreatedLaunch(newLaunch);
+      setCreatedLaunchAddress(launchPda.toBase58());
+    }
   };
 
   return (
@@ -237,6 +262,16 @@ export function CreateLaunch() {
           </button>
         )}
         <TxStatus state={state} />
+        {createdLaunchAddress && state.stage === "confirmed" && (
+          <div style={{ marginTop: 12 }}>
+            <button
+              className="button button--secondary"
+              onClick={() => navigate(`/raise/${createdLaunchAddress}`)}
+            >
+              View Live Launch on-chain ({createdLaunchAddress.slice(0, 6)}…{createdLaunchAddress.slice(-4)}) →
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

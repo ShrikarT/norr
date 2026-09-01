@@ -6,7 +6,8 @@ import { PublicKey } from "@solana/web3.js";
 import { quoteBuy, quoteSell, priceQ64, buildMarketBuyInstruction, buildMarketSellInstruction, type Instruction } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx, toWeb3Instruction } from "../lib/tx";
-import { SAMPLE_LAUNCHES, type CatalogLaunch, type CurveParams } from "../lib/catalog";
+import { useLaunch } from "../lib/onchain";
+import type { CatalogLaunch, CurveParams } from "../lib/catalog";
 import { PROGRAM_IDS, TOKEN_2022_PROGRAM, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
 
@@ -26,8 +27,16 @@ function derivePda(program: string, seeds: Uint8Array[]): PublicKey {
 
 export function LaunchDetail() {
   const { sale } = useParams();
-  const launch = SAMPLE_LAUNCHES.find((l) => l.id === sale);
+  const { launch, loading } = useLaunch(sale);
   const [tab, setTab] = useState<"overview" | "discussion" | "settlement">("overview");
+
+  if (loading && !launch)
+    return (
+      <>
+        <PageHead title="Loading launch…" copy="Querying live Solana cluster for launch account state." />
+        <Empty>Syncing on-chain state…</Empty>
+      </>
+    );
 
   if (!launch)
     return (
