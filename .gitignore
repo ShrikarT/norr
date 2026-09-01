@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 target/
 .anchor/
 dist/
@@ -17,6 +17,7 @@ deployments/generated/
 *payer*.json
 *.keypair
 *.key
+*.tsbuildinfo
 scratch/
 tools/agave/
 tools/zk-elgamal-proof/

@@ -327,8 +327,6 @@ async function main() {
 
   // Write p0-report.json
   writeFileSync(resolve(repoRoot, "p0-report.json"), safeJson(report, 2));
-  mkdirSync(resolve(repoRoot, "docs"), { recursive: true });
-  writeFileSync(resolve(repoRoot, "docs/p0-report.json"), safeJson(report, 2));
 
   console.log("\n=== STEP 9 DRILL COMPLETED SUCCESSFULLY ===");
   return {
