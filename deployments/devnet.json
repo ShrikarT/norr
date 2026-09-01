@@ -58,7 +58,7 @@
   "mints": {
     "projectDecimals": 9,
     "settlementDecimals": 6,
-    "settlementMint": null,
+    "settlementMint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
     "confidentialMint": "9E2w3wPkKnQHcsrmAEtTCh7XQzUEJ8dmEpyWtzauMW1Z"
   },
   "external": {
