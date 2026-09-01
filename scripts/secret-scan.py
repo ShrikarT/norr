@@ -21,6 +21,7 @@ SKIP_NAMES = {
     "execute-claim-payout.ts",
     "e2e-verification-results.json",
     "test-frontend-e2e.ts",
+    "verify-state.ts",
 }
 TEXT_SUFFIXES = {".ts", ".tsx", ".js", ".mjs", ".rs", ".json", ".toml", ".yaml", ".yml", ".sh", ".sql", ".css", ".html", ".example"}
 PATTERNS = {
