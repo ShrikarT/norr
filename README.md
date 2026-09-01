@@ -129,36 +129,6 @@ Norr leverages Solana's native **SPL Token-2022 Confidential Transfer Extension*
 - **Auditor Encryption**: Transfers encrypt amounts under the tally authority's public key, enabling transparent balance decryption without granting spending authority.
 - **Deterministic Key Derivation (ADR-010)**: User encryption keys derive deterministically via `PBKDF2-HMAC-SHA256` from a single wallet signature. No private keys or mnemonics are stored.
 
-### Verification Status & P0 Gate
-- **Lifecycle Steps 1–8**: Fully verified on canonical Solana Devnet (Mint initialization, account configuration, ZK proof generation, confidential deposit, apply pending, confidential transfer, destination apply, and confidential withdraw).
-- **P0 Audit Gate**: Norr enforces `P0Required` on private wrap and contribution paths until two independent human cryptographic reviewers sign off on `p0-report.json`.
-- **Mainnet Readiness**: Mainnet confidential support is not claimed until Solana validators activate native Token-2022 zk-ops on Mainnet-Beta.
-
----
-
-## Devnet State & Capabilities
-
-Real, confirmed Devnet transactions powering the Norr demo:
-
-| Operation | Target Object | Transaction Signature / Evidence |
-| :--- | :--- | :--- |
-| **Curation Desk Init** | `GurRuFuc94...` | [`5M9jaPCe...`](https://explorer.solana.com/tx/5M9jaPCesoaQH4ZCqTT3KS19doyZR3US3THgvHJNG4ZmYtg1mcNhZjGXi4BM9ZFtHwct4aeXv9qGhSxzMLk7Yf4h?cluster=devnet) |
-| **Social Thread & Comment** | `DYEPVp7y...` | [`G8JvtTfY...`](https://explorer.solana.com/tx/G8JvtTfYfwBpGXCuxs8WyP4xzv2dPxoWqpnb2ZBX1F1jXq1gJQJGMZ1rtY7vj4uyMjwzHQ7sVmaie1wjnqTTFcr?cluster=devnet) |
-| **Fee Router Init** | `fwPLJDmr...` | [`5XPvXCoG...`](https://explorer.solana.com/tx/5XPvXCoGmmYmVxhRPAjiHQm4Cyv45yQZUj44Nn9vEQ3MbwFuD1NTdvmxcM3owmpSKZ81nYzsCevCLkXj5ioSintu?cluster=devnet) |
-| **Token Launch Init** | `CjJ4Tzea...` | [`267NK6jY...`](https://explorer.solana.com/tx/267NK6jYH2C47AJN6JwRRKMAsFdA34sktCmT8GY5uPZTqrjC2W1ugD3zCVZpmKXMFWLcYJHXe2TqEtJuMvqtBM1r?cluster=devnet) |
-| **Settlement Merkle Root** | `3USZayAh...` | [`3RbwJbgC...`](https://explorer.solana.com/tx/3RbwJbgCJKhBvJfxdxXK5EPNsxxLwV2Umkf5qGLtorRAdkXAr9n38dAkY1pVLWtzXWTEpEp8wtK8n4V27PYPHA16?cluster=devnet) |
-| **Disaster Refund Commit** | `7iL2YS9L...` | [`5JydsTsC...`](https://explorer.solana.com/tx/5JydsTsCXAKrtL7MxUUSsubPEmS6H8LzbGHx3GRDECKYYkrfhtK4rZKCeytNUdeV43GHZHJku6EHeKtNmm2w8a2E?cluster=devnet) |
-| **Confidential Transfer** | `3N8KkTcA...` | [`2KiygxE9...`](https://explorer.solana.com/tx/2KiygxE9dJX2egQcd1DGywYuZysUSbcYVVXSwLwB3fEuN2PQh5ZMwTk8ViRqwATTTFSs3sH8uiNdzAurJKJzTSZ7?cluster=devnet) |
-
----
-
-## Security
-
-1. **Deterministic Invariant Checks**: Automated tests verify that curve reserves, fee distributions, and double-keccak Merkle trees cannot cross domains or suffer rounding losses.
-2. **Fail-Closed Design**: If proof context accounts or audit conditions fail, transactions revert immediately without state corruption.
-3. **Zero Secret Persistence**: Private keys and ElGamal decryption scalars are never persisted to localStorage, indexers, logs, or analytics.
-4. **Automated Secret Scanning**: Pre-commit CI gates run `scripts/secret-scan.py` to prevent key leakage.
-
 ---
 
 ## Getting Started
@@ -175,53 +145,32 @@ cd norr
 pnpm install
 ```
 
----
-
-## Development
-
+### Development & Testing
 ```bash
 # Build all packages and web app
 pnpm -r build
 
 # Run local web development server
 pnpm --filter @norr/web dev
-```
 
----
-
-## Testing
-
-Run the complete 8-point verification pipeline:
-```bash
-# Workspace unit and integration tests
+# Run workspace tests and typechecks
 pnpm -r test
-
-# TypeScript typechecking
 pnpm -r typecheck
-
-# Mathematical invariant checks
-node --import tsx --test tests/invariants.test.ts
-
-# Program ID consistency verification
-node --import tsx --test tests/program-ids-consistency.test.ts
-
-# Secret scan
-python3 scripts/secret-scan.py
-
-# Rust formatting and clippy
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets --all-features -- -D warnings
-cargo check --workspace
 ```
 
 ---
 
+## Documentation
 
-## Known Limitations
+For in-depth protocol specifications, cryptographic audits, and deployment guides, visit the documentation:
 
-1. **Mainnet Confidential Feature Gate**: Native Token-2022 confidential transfer instructions are active on Devnet; mainnet activation awaits final Solana validator consensus feature activation.
-2. **ZK Proof Generation Environment**: In-browser ZK proof compilation requires WebAssembly curve25519 bindings; production proof generation currently utilizes the native CLI tool (`tools/ct-proof-gen`).
-3. **P0 Reviewer Signatures**: Private token wrapping remains locked under `P0Required` until two external independent security auditors submit cryptographic attestations.
+- [**Product Specification**](PRODUCT.md) — Comprehensive product mechanics, user personas, bonding curves, and sealed raises.
+- [**System Architecture**](docs/architecture.md) — Program specifications, state machines, CPI flows, and PDA derivations.
+- [**Deployment Guide**](DEPLOYMENT.md) — Operator instructions for deploying programs to Devnet/Mainnet and hosting the frontend.
+- [**Confidential Transfers**](docs/confidential-transfers.md) — ZK ElGamal cryptography, Twisted ElGamal proofs, and Token-2022 extensions.
+- [**Devnet Audit Evidence**](docs/audit-evidence.md) — Confirmed on-chain transaction signatures, accounts, and cryptographic proof verification logs.
+- [**Final Release Audit**](docs/final-release-audit.md) — Subsystem status matrix and verification records.
+- [**Design System**](docs/DESIGN.md) — Visual identity, typography, telemetry HUD principles, and UI tokens.
 
 ---
 
