@@ -9,7 +9,6 @@ Target Cluster: **Solana Devnet**
 
 ![Norr demo thumbnail](norr-demo-thumbnail.png)
 
-🎬 **Demo Video:** [`norr-demo.mp4`](norr-demo.mp4) — A complete walkthrough of the live web product, Devnet programs, and the confidential transfer verification pipeline.
 
 ---
 
