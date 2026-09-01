@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { quoteBuy, quoteSell, priceQ64, buildMarketBuyInstruction, buildMarketSellInstruction, type Instruction } from "@norr/sdk";
 import { useCluster } from "../lib/status";
 import { useTx, toWeb3Instruction } from "../lib/tx";
-import { useLaunch } from "../lib/onchain";
+import { useLaunch, type LiveCatalogLaunch } from "../lib/onchain";
 import type { CatalogLaunch, CurveParams } from "../lib/catalog";
 import { PROGRAM_IDS, TOKEN_2022_PROGRAM, short } from "../lib/config";
 import { Badge, Callout, CapabilityGate, Empty, Metric, PageHead, Panel, TxStatus } from "../components/primitives";
@@ -19,6 +19,26 @@ function ata(owner: PublicKey, mint: PublicKey): PublicKey {
     [owner.toBuffer(), new PublicKey(LEGACY_TOKEN_PROGRAM).toBuffer(), mint.toBuffer()],
     new PublicKey(ATA_PROGRAM)
   )[0];
+}
+
+function createAtaIdempotentInstruction(
+  payer: PublicKey,
+  associatedToken: PublicKey,
+  owner: PublicKey,
+  mint: PublicKey
+): TransactionInstruction {
+  return new TransactionInstruction({
+    keys: [
+      { pubkey: payer, isSigner: true, isWritable: true },
+      { pubkey: associatedToken, isSigner: false, isWritable: true },
+      { pubkey: owner, isSigner: false, isWritable: false },
+      { pubkey: mint, isSigner: false, isWritable: false },
+      { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
+      { pubkey: new PublicKey(LEGACY_TOKEN_PROGRAM), isSigner: false, isWritable: false },
+    ],
+    programId: new PublicKey(ATA_PROGRAM),
+    data: Buffer.from([1]),
+  });
 }
 
 function derivePda(program: string, seeds: Uint8Array[]): PublicKey {
@@ -94,7 +114,7 @@ export function LaunchDetail() {
 /** Bonding curve trade panel. Quotes use the exact integer arithmetic the
  *  program executes. The write path is gated on the market program actually
  *  being executable on the connected cluster — no fake sends. */
-function MarketPanel({ launch, curve }: { launch: CatalogLaunch; curve: CurveParams }) {
+function MarketPanel({ launch, curve }: { launch: LiveCatalogLaunch; curve: CurveParams }) {
   const wallet = useWallet();
   const c = useCluster();
   const { state, run, reset } = useTx();
@@ -124,28 +144,97 @@ function MarketPanel({ launch, curve }: { launch: CatalogLaunch; curve: CurvePar
   const handleTrade = async () => {
     if (!wallet.publicKey || !quote) return;
     reset();
-    // Real PDA derivations against the market program.
-    const projectMintSeed = new TextEncoder().encode(launch.id); // catalog launches have no live mint
-    const curvePda = derivePda(PROGRAM_IDS.market, [new TextEncoder().encode("curve"), projectMintSeed]);
-    const baseVault = derivePda(PROGRAM_IDS.market, [new TextEncoder().encode("cbase"), curvePda.toBuffer()]);
-    const tokenVault = derivePda(PROGRAM_IDS.market, [new TextEncoder().encode("ctok"), curvePda.toBuffer()]);
-    const minOut = (quote.outAtomic * BigInt(10_000 - slippageBps)) / 10_000n;
+
+    let projectMintKey: PublicKey;
+    try {
+      if (launch.projectMint) {
+        projectMintKey = new PublicKey(launch.projectMint);
+      } else if (launch.onchain?.projectMint) {
+        projectMintKey = new PublicKey(launch.onchain.projectMint);
+      } else if (launch.id.length >= 32 && launch.id.length <= 44 && !launch.id.includes("-")) {
+        projectMintKey = new PublicKey(launch.id);
+      } else {
+        projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
+      }
+    } catch {
+      projectMintKey = derivePda(PROGRAM_IDS.launch, [Buffer.from("mock_mint"), Buffer.from(launch.id)]);
+    }
+
+    let curvePda: PublicKey;
+    if (launch.curvePda) {
+      curvePda = new PublicKey(launch.curvePda);
+    } else if (launch.onchain?.curve) {
+      curvePda = new PublicKey(launch.onchain.curve);
+    } else {
+      curvePda = derivePda(PROGRAM_IDS.market, [Buffer.from("curve"), projectMintKey.toBuffer()]);
+    }
+
+    const baseMintStr = launch.curveAccount?.baseMint || launch.onchain?.contributionMint || "Ez3fzpwBkpBN69b7tnB6KeqLF84E5yvTA6neCaoeUnQ9";
+    const baseMint = new PublicKey(baseMintStr);
+
+    const tokenVault = launch.curveAccount?.tokenVault
+      ? new PublicKey(launch.curveAccount.tokenVault)
+      : ata(curvePda, projectMintKey);
+    const baseVault = launch.curveAccount?.baseVault
+      ? new PublicKey(launch.curveAccount.baseVault)
+      : ata(curvePda, baseMint);
+
+    let router: PublicKey;
+    if (launch.routerPda) {
+      router = new PublicKey(launch.routerPda);
+    } else if (launch.onchain?.router) {
+      router = new PublicKey(launch.onchain.router);
+    } else {
+      const launchKey = launch.address ? new PublicKey(launch.address) : derivePda(PROGRAM_IDS.launch, [Buffer.from("launch"), projectMintKey.toBuffer()]);
+      router = derivePda(PROGRAM_IDS.fees, [Buffer.from("router"), launchKey.toBuffer()]);
+    }
+
+    const routerVault = ata(router, baseMint);
+    const userBaseToken = ata(wallet.publicKey, baseMint);
+    const userProjectToken = ata(wallet.publicKey, projectMintKey);
+
     const accounts = {
       user: wallet.publicKey.toBase58(),
       curve: curvePda.toBase58(),
-      userBaseToken: ata(wallet.publicKey, curvePda).toBase58(),
-      userProjectToken: ata(wallet.publicKey, tokenVault).toBase58(),
+      userBaseToken: userBaseToken.toBase58(),
+      userProjectToken: userProjectToken.toBase58(),
       baseVault: baseVault.toBase58(),
       tokenVault: tokenVault.toBase58(),
-      routerVault: derivePda(PROGRAM_IDS.fees, [new TextEncoder().encode("router"), curvePda.toBuffer()]).toBase58(),
-      router: PROGRAM_IDS.fees,
+      routerVault: routerVault.toBase58(),
+      router: router.toBase58(),
       tokenProgram: LEGACY_TOKEN_PROGRAM,
     };
+
+    const instructions: TransactionInstruction[] = [
+      createAtaIdempotentInstruction(wallet.publicKey, userBaseToken, wallet.publicKey, baseMint),
+      createAtaIdempotentInstruction(wallet.publicKey, userProjectToken, wallet.publicKey, projectMintKey),
+    ];
+
+    const minOut = (quote.outAtomic * BigInt(10_000 - slippageBps)) / 10_000n;
+
     const ix: Instruction =
       mode === "buy"
-        ? buildMarketBuyInstruction(PROGRAM_IDS.market, accounts, minOut, quote.inAtomic)
+        ? buildMarketBuyInstruction(PROGRAM_IDS.market, accounts, quote.inAtomic, minOut)
         : buildMarketSellInstruction(PROGRAM_IDS.market, accounts, quote.inAtomic, minOut);
-    await run(c.connection, wallet, [toWeb3Instruction(ix)]);
+
+    instructions.push(toWeb3Instruction(ix));
+
+    console.log("=== NORR Trade Diagnostic ===", {
+      mode,
+      amount,
+      slippageBps,
+      launchAddress: launch.address,
+      curvePda: curvePda.toBase58(),
+      projectMint: projectMintKey.toBase58(),
+      baseMint: baseMint.toBase58(),
+      router: router.toBase58(),
+      user: wallet.publicKey.toBase58(),
+      instructionCount: instructions.length,
+      quote,
+      minOut: minOut.toString(),
+    });
+
+    await run(c.connection, wallet, instructions);
   };
 
   return (
